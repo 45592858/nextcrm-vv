@@ -29,7 +29,7 @@ alwaysApply: true
 
 ## 组件与命名规范
 - 复用组件放在 components/ 下，命名采用大驼峰（PascalCase），如 NewLeadCompanyForm、LeadCompanyDetail。
-- 表格相关组件放在 table-components/ 下，命名如 data-table.tsx、columns.ts。
+- 表格相关组件放在 table-components/ 下，命名如 data-table.tsx、columns.tsx。
 - 详情页组件建议单独拆分，便于复用和维护。
 
 ## 其他

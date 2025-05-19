@@ -1,0 +1,41 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# app/[locale]/(routes)/crm 目录结构与最佳实践
+
+- 该目录下为 CRM 相关的所有页面模块，遵循 Next.js App Router 规范。
+- 每个业务模块（如 leads、lead-companies、accounts、contacts、opportunities 等）均为独立子目录，命名采用小写中划线分隔。
+- 每个模块下建议结构如下：
+  - `page.tsx`：主列表页，异步函数，服务端渲染。
+  - `components/`：表单、弹窗、详情等复用组件，命名采用大驼峰（PascalCase）。
+  - `table-components/`：表格相关组件（如 data-table.tsx、columns.ts），便于统一表格风格。
+  - `[id]/`：详情页、编辑页等动态路由，支持多级嵌套。
+- 页面主入口统一用 `Container` 包裹，标题、描述通过多语言 key 管理。
+- 列表页集成 Suspense、加载动画、主视图组件（如 LeadsView、LeadCompaniesView）。
+- 新建/编辑表单通过弹窗（RightViewModal）集成，表单组件独立于 components/ 下。
+- 表单校验统一用 react-hook-form + zod，UI 组件优先用 shadcn/ui。
+- 详情页建议采用 `[id]/page.tsx`，详情组件放在 components/ 下。
+- 多语言 key 统一在 locales/ 下维护，key 命名分模块分组。
+
+示例结构：
+```
+app/[locale]/(routes)/crm/
+  ├── leads/
+  │     ├── page.tsx
+  │     ├── components/
+  │     │     └── NewLeadForm.tsx
+  │     ├── table-components/
+  │     │     └── data-table.tsx
+  │     └── [leadId]/
+  ├── lead-companies/
+  │     ├── page.tsx
+  │     ├── components/
+  │     │     └── NewLeadCompanyForm.tsx
+  │     ├── table-components/
+  │     │     └── data-table.tsx
+  │     └── [leadCompanyId]/
+  └── ...
+```
+

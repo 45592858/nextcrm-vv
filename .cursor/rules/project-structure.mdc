@@ -1,0 +1,25 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 项目结构说明
+
+本项目为 Next.js + TypeScript 构建的 CRM 系统，主要目录结构如下：
+
+- [app/](mdc:app)：Next.js 应用主目录，包含多语言支持（[locale]）、页面路由、认证、Provider 等。
+- [components/](mdc:components)：通用 React 组件，按功能细分子目录。
+- [actions/](mdc:actions)：服务端 actions，按业务模块划分。
+- [lib/](mdc:lib)：工具库、API 封装、第三方服务集成等。
+- [store/](mdc:store)：全局/局部状态管理（如 Zustand）。
+- [hooks/](mdc:hooks)：自定义 React hooks。
+- [prisma/](mdc:prisma)：Prisma ORM 配置、数据库 schema 及种子数据。
+- [emails/](mdc:emails)：邮件模板（React 组件）。
+- [public/](mdc:public)：静态资源（图片、字体等）。
+- [locales/](mdc:locales)：多语言本地化资源。
+- [cypress/](mdc:cypress)：端到端测试相关代码。
+- [shadcn-examples/](mdc:shadcn-examples)：UI 组件库 shadcn 的示例。
+- [rossum/](mdc:rossum)：与 Rossum AI 相关的配置。
+- 其他配置文件如 [package.json](mdc:package.json)、[README.md](mdc:README.md)、[tsconfig.json](mdc:tsconfig.json) 等。
+
+入口页面、API 路由、认证、国际化、数据库、AI、邮件、测试等均有独立目录，便于维护和扩展。

@@ -1,0 +1,23 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 主要业务模块页面规则
+
+本项目的核心业务页面均位于 `app/[locale]/(routes)/` 目录下，按功能模块划分，典型模块说明如下：
+
+- [crm/](mdc:app/[locale]/(routes)/crm)：客户关系管理（CRM）模块，包含线索、客户、联系人、合同、任务、仪表盘等子模块。
+- [projects/](mdc:app/[locale]/(routes)/projects)：项目管理模块，包含项目列表、任务、看板、表单、仪表盘等。
+- [invoice/](mdc:app/[locale]/(routes)/invoice)：发票管理模块，支持发票详情、注释、数据表、用户维度等。
+- [emails/](mdc:app/[locale]/(routes)/emails)：邮件管理模块，支持邮件收发、邮件数据、邮件相关组件。
+- [reports/](mdc:app/[locale]/(routes)/reports)：报表模块，展示各类业务统计和图表。
+- [fulltext-search/](mdc:app/[locale]/(routes)/fulltext-search)：全文检索模块，支持站内内容搜索。
+- [employees/](mdc:app/[locale]/(routes)/employees)：员工管理模块。
+- [documents/](mdc:app/[locale]/(routes)/documents)：文档管理模块，支持文档上传、列表、详情等。
+- [admin/](mdc:app/[locale]/(routes)/admin)：后台管理模块，包含用户、模块、表单等子模块。
+- [databox/](mdc:app/[locale]/(routes)/databox)：数据盒子模块。
+- [secondBrain/](mdc:app/[locale]/(routes)/secondBrain)：知识库/AI 助手模块，支持表格、对话、知识管理等。
+
+每个模块下通常包含 `page.tsx`（主页面）、`components/`（业务组件）、`data/`（数据处理）、`dialogs/`（弹窗）、`forms/`（表单）等子目录，便于功能扩展和维护。
+

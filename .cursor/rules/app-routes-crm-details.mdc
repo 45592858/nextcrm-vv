@@ -1,0 +1,40 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# app/[locale]/(routes)/crm 细致规则（表格、详情页、批量操作等）
+
+## 表格（table-components/）
+- 每个业务模块下建议有 table-components/ 目录，统一存放表格相关组件。
+- 表格主组件命名为 data-table.tsx，列定义为 columns.ts。
+- 表格组件优先使用 shadcn/ui 的 DataTable，支持排序、筛选、分页、批量选择。
+- 表格数据与 API 结构字段保持一致，列 key 与后端字段一一对应。
+- 表格操作区支持批量操作（如批量删除、批量分配），操作按钮风格与 leads 一致。
+- 表格支持多语言，表头、操作按钮等文本通过多语言 key 管理。
+
+## 详情页（[id]/page.tsx）
+- 每个业务模块建议支持动态详情页，目录为 [id]/page.tsx。
+- 详情页通过 id 获取单条数据，展示所有主要字段。
+- 详情页主内容建议用 Container 包裹，标题、描述多语言。
+- 详情页下方可集成相关子表（如公司下的联系人、线索下的跟进记录等）。
+- 详情页支持编辑、删除、分配等操作，操作按钮风格与 leads 详情页一致。
+- 详情页复用 components/ 下的详情组件，命名如 LeadCompanyDetail、LeadDetail。
+
+## 批量操作
+- 表格支持多选，批量操作按钮（如批量删除、批量分配）放在表格顶部或操作区。
+- 批量操作通过 API 支持批量处理（如 POST /api/crm/leads/batch-delete）。
+- 批量操作需有二次确认弹窗，防止误操作。
+- 批量操作结果通过 toast 组件反馈，风格与 leads 一致。
+
+## 组件与命名规范
+- 复用组件放在 components/ 下，命名采用大驼峰（PascalCase），如 NewLeadCompanyForm、LeadCompanyDetail。
+- 表格相关组件放在 table-components/ 下，命名如 data-table.tsx、columns.ts。
+- 详情页组件建议单独拆分，便于复用和维护。
+
+## 其他
+- 所有页面、组件、表格、表单均需严格类型声明，避免 any。
+- 代码风格遵循 ESLint + Prettier 规范。
+- UI 设计遵循 shadcn/ui 和 Tailwind CSS 最佳实践。
+- 多语言 key 命名分模块分组，保持不同语言文件 key 一致。
+

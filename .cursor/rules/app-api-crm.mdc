@@ -1,0 +1,35 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# app/api/crm 目录结构与最佳实践
+
+- 该目录下为 CRM 相关的所有后端 API 路由，遵循 Next.js App Router API 规范。
+- 每个业务模块（如 leads、accounts、contacts、opportunities 等）均为独立子目录，命名采用小写中划线分隔。
+- 每个模块下建议结构如下：
+  - `route.ts`：主路由，支持 GET（列表）、POST（新建）、PUT（批量更新）等。
+  - `[id]/route.ts`：详情路由，支持 GET（详情）、PUT（更新）、DELETE（删除）。
+  - 其他自定义子路由（如 create-lead-from-web/）按业务需求扩展。
+- API 路由风格遵循 RESTful 设计，路径、方法与前端页面结构一一对应。
+- 所有敏感操作需校验用户身份（如 getServerSession + authOptions）。
+- 数据库操作统一通过 prismadb 封装，类型安全。
+- API 返回统一用 NextResponse.json，错误处理规范。
+- 与前端表单、表格、详情页字段保持一致，便于前后端联调。
+- 多语言、权限、业务校验等建议在 API 层处理。
+
+示例结构：
+```
+app/api/crm/
+  ├── leads/
+  │     ├── route.ts
+  │     ├── [leadId]/
+  │     │     └── route.ts
+  │     └── create-lead-from-web/
+  ├── accounts/
+  │     ├── route.ts
+  │     └── [id]/
+  │           └── route.ts
+  └── ...
+```
+

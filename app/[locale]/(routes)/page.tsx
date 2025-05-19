@@ -13,6 +13,7 @@ import {
   Users2Icon,
 } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { getDictionary } from "@/dictionaries";
 
@@ -39,6 +40,11 @@ import { getDocumentsCount } from "@/actions/dashboard/get-documents-count";
 import { getActiveUsersCount } from "@/actions/dashboard/get-active-users-count";
 import { getOpportunitiesCount } from "@/actions/dashboard/get-opportunities-count";
 import { getExpectedRevenue } from "@/actions/crm/opportunity/get-expected-revenue";
+
+export default function Page() {
+  redirect("/crm/leads");
+  return null;
+}
 
 const DashboardPage = async () => {
   const session = await getServerSession(authOptions);
@@ -226,8 +232,6 @@ const DashboardPage = async () => {
     </Container>
   );
 };
-
-export default DashboardPage;
 
 const DashboardCard = ({
   href,

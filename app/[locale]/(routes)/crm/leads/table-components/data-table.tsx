@@ -28,13 +28,15 @@ import {
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { PanelTopClose, PanelTopOpen } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Lead } from "../table-data/schema";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function LeadDataTable<TData, TValue>({
+export function LeadDataTable<TData extends { id: string; company?: string; lead_source_content?: string }, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -45,8 +47,11 @@ export function LeadDataTable<TData, TValue>({
     []
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = React.useState("");
 
   const [hide, setHide] = React.useState(false);
+
+  const router = useRouter();
 
   const table = useReactTable({
     data,
@@ -56,6 +61,7 @@ export function LeadDataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
+      globalFilter,
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -68,6 +74,15 @@ export function LeadDataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    globalFilterFn: (row, columnId, filterValue) => {
+      const company = row.original.company || "";
+      const content = row.original.lead_source_content || "";
+      if (!filterValue) return true;
+      return (
+        company.toLowerCase().includes(filterValue.toLowerCase()) ||
+        content.toLowerCase().includes(filterValue.toLowerCase())
+      );
+    },
   });
 
   return (
@@ -103,7 +118,7 @@ export function LeadDataTable<TData, TValue>({
         </div>
       ) : (
         <>
-          <DataTableToolbar table={table} />
+          <DataTableToolbar table={table} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
           <div className="rounded-md border">
             <Table>
               <TableHeader>
@@ -130,6 +145,11 @@ export function LeadDataTable<TData, TValue>({
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && "selected"}
+                      onDoubleClick={() => {
+                        const id = row.original.id;
+                        if (id) router.push(`/crm/leads/${id}`);
+                      }}
+                      className="cursor-pointer"
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

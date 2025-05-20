@@ -133,13 +133,6 @@ export async function BasicView({ data }: OppsViewProps) {
                   <p className="text-sm text-muted-foreground">{data.introduction}</p>
                 </div>
               </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <File className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Lead Source Content</p>
-                  <p className="text-sm text-muted-foreground">{data.lead_source_content}</p>
-                </div>
-              </div>
             </div>
             <div>
               <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
@@ -183,6 +176,23 @@ export async function BasicView({ data }: OppsViewProps) {
                 <div className="space-y-1">
                   <p className="text-sm font-medium leading-none">Type</p>
                   <p className="text-sm text-muted-foreground">{data.type}</p>
+                </div>
+              </div>
+              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
+                <File className="mt-px h-5 w-5" />
+                <div className="space-y-1">
+                  <p className="text-sm font-medium leading-none">Lead Source Content</p>
+                  <pre className="text-xs text-muted-foreground bg-muted rounded p-2 overflow-x-auto whitespace-pre-wrap break-all">
+                    {(() => {
+                      try {
+                        return JSON.stringify(JSON.parse(data.lead_source_content), null, 2);
+                      } catch {
+                        return typeof data.lead_source_content === 'string'
+                          ? data.lead_source_content
+                          : '';
+                      }
+                    })()}
+                  </pre>
                 </div>
               </div>
             </div>

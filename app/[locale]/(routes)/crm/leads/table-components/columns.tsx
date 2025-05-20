@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 
 import { statuses } from "../table-data/data";
 import { Lead } from "../table-data/schema";
@@ -151,16 +152,54 @@ export const columns: ColumnDef<Lead>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Introduction" />
     ),
-    cell: ({ row }) => <div>{row.getValue("introduction")}</div>,
+    cell: ({ row }) => {
+      const value = row.getValue("introduction") as string;
+      if (!value) return null;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="max-w-[200px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[400px] whitespace-pre-line break-words">{value}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
   },
   {
     accessorKey: "lead_source_content",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Lead Source Content" />
     ),
-    cell: ({ row }) => <div>{row.getValue("lead_source_content")}</div>,
+    cell: ({ row }) => {
+      const value = row.getValue("lead_source_content") as string;
+      if (!value) return null;
+      let display = value;
+      try {
+        display = JSON.stringify(JSON.parse(value), null, 2);
+      } catch {}
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="max-w-[200px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[600px] whitespace-pre-line break-words">
+              {display}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
     enableSorting: false,
     enableHiding: true,
+    filterFn: (row, id, value) => {
+      const content = row.getValue(id);
+      if (!value) return true;
+      if (!content) return false;
+      return String(content).toLowerCase().includes(String(value).toLowerCase());
+    },
   },
   {
     accessorKey: "status",

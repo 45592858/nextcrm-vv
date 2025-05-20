@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "No headers" }, { status: 400 });
   }
 
-  const { firstName, lastName, account, job, email, phone, lead_source } = body;
+  const { account, lead_source, region, contacts, memo, industry, website, address, company_type, employee_scale, introduction, lead_source_content } = body;
 
   //Validate auth with token from .env.local
   const token = headers.get("authorization");
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     console.log("Unauthorized");
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   } else {
-    if (!lastName) {
+    if (!account) {
       return NextResponse.json(
         { message: "Missing required fields" },
         { status: 400 }
@@ -49,15 +49,20 @@ export async function POST(req: Request) {
       await prismadb.crm_Leads.create({
         data: {
           v: 1,
-          firstName,
-          lastName,
           company: account,
-          jobTitle: job,
-          email,
-          phone,
           lead_source,
           status: "NEW",
           type: "DEMO",
+          region,
+          contacts,
+          memo,
+          industry,
+          website,
+          address,
+          company_type,
+          employee_scale,
+          introduction,
+          lead_source_content,
         },
       });
 

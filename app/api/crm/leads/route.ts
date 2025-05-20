@@ -19,18 +19,22 @@ export async function POST(req: Request) {
     }
 
     const {
-      first_name,
-      last_name,
       company,
-      jobTitle,
-      email,
-      phone,
-      description,
       lead_source,
       refered_by,
       campaign,
       assigned_to,
       accountIDs,
+      region,
+      contacts,
+      memo,
+      industry,
+      website,
+      address,
+      company_type,
+      employee_scale,
+      introduction,
+      lead_source_content,
     } = body;
 
     //console.log(req.body, "req.body");
@@ -40,24 +44,28 @@ export async function POST(req: Request) {
         v: 1,
         createdBy: userId,
         updatedBy: userId,
-        firstName: first_name,
-        lastName: last_name,
         company,
-        jobTitle,
-        email,
-        phone,
-        description,
         lead_source,
         refered_by,
         campaign,
         assigned_to: assigned_to || userId,
-        accountsIDs: accountIDs,
+        accountsIDs: accountIDs && accountIDs !== "" ? accountIDs : undefined,
         status: "NEW",
         type: "DEMO",
+        region,
+        contacts,
+        memo,
+        industry,
+        website,
+        address,
+        company_type,
+        employee_scale,
+        introduction,
+        lead_source_content,
       },
     });
 
-    if (assigned_to !== userId) {
+    if (assigned_to && assigned_to !== "" && assigned_to !== userId) {
       const notifyRecipient = await prismadb.users.findFirst({
         where: {
           id: assigned_to,
@@ -73,12 +81,12 @@ export async function POST(req: Request) {
         to: notifyRecipient.email || "info@softbase.cz",
         subject:
           notifyRecipient.userLanguage === "en"
-            ? `New lead ${first_name} ${last_name} has been added to the system and assigned to you.`
-            : `Nová příležitost ${first_name} ${last_name} byla přidána do systému a přidělena vám.`,
+            ? `New lead ${company} has been added to the system and assigned to you.`
+            : `Nová příležitost ${company} byla přidána do systému a přidělena vám.`,
         text:
           notifyRecipient.userLanguage === "en"
-            ? `New lead ${first_name} ${last_name} has been added to the system and assigned to you. You can click here for detail: ${process.env.NEXT_PUBLIC_APP_URL}/crm/opportunities/${newLead.id}`
-            : `Nová příležitost ${first_name} ${last_name} byla přidána do systému a přidělena vám. Detaily naleznete zde: ${process.env.NEXT_PUBLIC_APP_URL}/crm/opportunities/${newLead.id}`,
+            ? `New lead ${company} has been added to the system and assigned to you. You can click here for detail: ${process.env.NEXT_PUBLIC_APP_URL}/crm/opportunities/${newLead.id}`
+            : `Nová příležitost ${company} byla přidána do systému a přidělena vám. Detaily naleznete zde: ${process.env.NEXT_PUBLIC_APP_URL}/crm/opportunities/${newLead.id}`,
       });
     }
 
@@ -105,13 +113,7 @@ export async function PUT(req: Request) {
 
     const {
       id,
-      firstName,
-      lastName,
       company,
-      jobTitle,
-      email,
-      phone,
-      description,
       lead_source,
       refered_by,
       campaign,
@@ -119,6 +121,16 @@ export async function PUT(req: Request) {
       accountIDs,
       status,
       type,
+      region,
+      contacts,
+      memo,
+      industry,
+      website,
+      address,
+      company_type,
+      employee_scale,
+      introduction,
+      lead_source_content,
     } = body;
 
     const updatedLead = await prismadb.crm_Leads.update({
@@ -128,24 +140,28 @@ export async function PUT(req: Request) {
       data: {
         v: 1,
         updatedBy: userId,
-        firstName,
-        lastName,
         company,
-        jobTitle,
-        email,
-        phone,
-        description,
         lead_source,
         refered_by,
         campaign,
         assigned_to: assigned_to || userId,
-        accountsIDs: accountIDs,
+        accountsIDs: accountIDs && accountIDs !== "" ? accountIDs : undefined,
         status,
         type,
+        region,
+        contacts,
+        memo,
+        industry,
+        website,
+        address,
+        company_type,
+        employee_scale,
+        introduction,
+        lead_source_content,
       },
     });
 
-    if (assigned_to !== userId) {
+    if (assigned_to && assigned_to !== "" && assigned_to !== userId) {
       const notifyRecipient = await prismadb.users.findFirst({
         where: {
           id: assigned_to,
@@ -161,12 +177,12 @@ export async function PUT(req: Request) {
         to: notifyRecipient.email || "info@softbase.cz",
         subject:
           notifyRecipient.userLanguage === "en"
-            ? `New lead ${firstName} ${lastName} has been added to the system and assigned to you.`
-            : `Nová příležitost ${firstName} ${lastName} byla přidána do systému a přidělena vám.`,
+            ? `New lead ${company} has been added to the system and assigned to you.`
+            : `Nová příležitost ${company} byla přidána do systému a přidělena vám.`,
         text:
           notifyRecipient.userLanguage === "en"
-            ? `New lead ${firstName} ${lastName} has been added to the system and assigned to you. You can click here for detail: ${process.env.NEXT_PUBLIC_APP_URL}/crm/opportunities/${updatedLead.id}`
-            : `Nová příležitost ${firstName} ${lastName} byla přidána do systému a přidělena vám. Detaily naleznete zde: ${process.env.NEXT_PUBLIC_APP_URL}/crm/opportunities/${updatedLead.id}`,
+            ? `New lead ${company} has been added to the system and assigned to you. You can click here for detail: ${process.env.NEXT_PUBLIC_APP_URL}/crm/opportunities/${updatedLead.id}`
+            : `Nová příležitost ${company} byla přidána do systému a přidělena vám. Detaily naleznete zde: ${process.env.NEXT_PUBLIC_APP_URL}/crm/opportunities/${updatedLead.id}`,
       });
     }
 

@@ -74,7 +74,7 @@ export function DataTableRowActions<TData>({
         loading={loading}
       />
       <RightViewModalNoTrigger
-        title={"Update lead" + " - " + lead?.firstName + " " + lead?.lastName}
+        title={"Update lead - " + (lead?.company || "")}
         description="Update contact details"
         open={updateOpen}
         setOpen={setUpdateOpen}

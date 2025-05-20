@@ -19,7 +19,7 @@ const LeadDetailPage = async (props: LeadDetailPageProps) => {
 
   return (
     <Container
-      title={`Lead: ${lead?.firstName} ${lead?.lastName}`}
+      title={`Lead: ${lead?.company || ''}`}
       description={"Everything you need to know about sales potential"}
     >
       <div className="space-y-5">

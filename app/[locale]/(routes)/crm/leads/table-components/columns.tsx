@@ -75,40 +75,92 @@ export const columns: ColumnDef<Lead>[] = [
     enableHiding: true,
   },
   {
-    accessorKey: "firstName",
+    accessorKey: "region",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
+      <DataTableColumnHeader column={column} title="Region" />
     ),
-
-    cell: ({ row }) => (
-      <div>
-        {row.original.firstName
-          ? row.getValue("firstName")
-          : "" + " " + row.original.lastName}
-      </div>
-    ),
+    cell: ({ row }) => <div>{row.getValue("region")}</div>,
     enableSorting: false,
     enableHiding: true,
   },
   {
-    accessorKey: "email",
+    accessorKey: "contacts",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="E-mail" />
+      <DataTableColumnHeader column={column} title="Contacts" />
     ),
-
-    cell: ({ row }) => <div className="w-[150px]">{row.getValue("email")}</div>,
-    enableSorting: true,
+    cell: ({ row }) => <div>{row.getValue("contacts")}</div>,
+    enableSorting: false,
     enableHiding: true,
   },
   {
-    accessorKey: "phone",
+    accessorKey: "memo",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Phone" />
+      <DataTableColumnHeader column={column} title="Memo" />
     ),
-
-    cell: ({ row }) => <div className="w-[150px]">{row.getValue("phone")}</div>,
+    cell: ({ row }) => <div>{row.getValue("memo")}</div>,
     enableSorting: false,
-    enableHiding: false,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "industry",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Industry" />
+    ),
+    cell: ({ row }) => <div>{row.getValue("industry")}</div>,
+    enableSorting: false,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "website",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Website" />
+    ),
+    cell: ({ row }) => <div>{row.getValue("website")}</div>,
+    enableSorting: false,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "address",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Address" />
+    ),
+    cell: ({ row }) => <div>{row.getValue("address")}</div>,
+    enableSorting: false,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "company_type",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Company Type" />
+    ),
+    cell: ({ row }) => <div>{row.getValue("company_type")}</div>,
+    enableSorting: false,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "employee_scale",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Employee Scale" />
+    ),
+    cell: ({ row }) => <div>{row.getValue("employee_scale")}</div>,
+    enableSorting: false,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "introduction",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Introduction" />
+    ),
+    cell: ({ row }) => <div>{row.getValue("introduction")}</div>,
+  },
+  {
+    accessorKey: "lead_source_content",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Lead Source Content" />
+    ),
+    cell: ({ row }) => <div>{row.getValue("lead_source_content")}</div>,
+    enableSorting: false,
+    enableHiding: true,
   },
   {
     accessorKey: "status",

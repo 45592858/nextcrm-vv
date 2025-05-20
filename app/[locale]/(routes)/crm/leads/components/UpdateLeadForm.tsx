@@ -59,30 +59,42 @@ export function UpdateLeadForm({ initialData, setOpen }: NewTaskFormProps) {
 
   const formSchema = z.object({
     id: z.string().min(5).max(30),
-    firstName: z.string().optional().nullable(),
-    lastName: z.string().min(3).max(30).nonempty(),
-    company: z.string().nullable().optional(),
-    jobTitle: z.string().nullable().optional(),
-    email: z.string().email().nullable().optional(),
-    phone: z.string().min(0).max(15).nullable().optional(),
-    description: z.string().nullable().optional(),
-    lead_source: z.string().nullable().optional(),
+    company: z.string(),
+    lead_source: z.string().optional().nullable(),
     refered_by: z.string().optional().nullable(),
-    //TODO: add campaing schema from db as data source
     campaign: z.string().optional().nullable(),
     assigned_to: z.string().optional(),
     status: z.string(),
-    //TODO: add type schema from db as data source
     type: z.string().optional(),
     accountIDs: z.string().optional(),
+    region: z.string().optional().nullable(),
+    contacts: z.string().optional().nullable(),
+    memo: z.string().optional().nullable(),
+    industry: z.string().optional().nullable(),
+    website: z.string().optional().nullable(),
+    address: z.string().optional().nullable(),
+    company_type: z.string().optional().nullable(),
+    employee_scale: z.string().optional().nullable(),
+    introduction: z.string().optional().nullable(),
+    lead_source_content: z.string().optional().nullable(),
   });
 
   type NewLeadFormValues = z.infer<typeof formSchema>;
 
   //TODO: fix this any
+  function fixNullToEmpty(obj: any) {
+    if (!obj || typeof obj !== "object") return obj;
+    const newObj: any = {};
+    for (const key in obj) {
+      if (obj[key] === null) newObj[key] = "";
+      else newObj[key] = obj[key];
+    }
+    return newObj;
+  }
+
   const form = useForm<any>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: fixNullToEmpty(initialData),
   });
 
   const onSubmit = async (data: NewLeadFormValues) => {
@@ -135,40 +147,6 @@ export function UpdateLeadForm({ initialData, setOpen }: NewTaskFormProps) {
           <div className="pb-5 space-y-2">
             <FormField
               control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First name</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="Johny"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last name</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="Walker"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="company"
               render={({ field }) => (
                 <FormItem>
@@ -186,27 +164,14 @@ export function UpdateLeadForm({ initialData, setOpen }: NewTaskFormProps) {
             />
             <FormField
               control={form.control}
-              name="jobTitle"
+              name="region"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Job Title</FormLabel>
-                  <FormControl>
-                    <Input disabled={isLoading} placeholder="CTO" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>E-mail</FormLabel>
+                  <FormLabel>Region</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isLoading}
-                      placeholder="johny@domain.com"
+                      placeholder="佛山-顺德区"
                       {...field}
                     />
                   </FormControl>
@@ -216,32 +181,48 @@ export function UpdateLeadForm({ initialData, setOpen }: NewTaskFormProps) {
             />
             <FormField
               control={form.control}
-              name="phone"
+              name="contacts"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone</FormLabel>
+                  <FormLabel>Contacts (JSON)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      disabled={isLoading}
+                      placeholder='[{"name":"张三","phone":"123456"}]'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="memo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Memo</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      disabled={isLoading}
+                      placeholder="备注信息"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="industry"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Industry</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isLoading}
-                      placeholder="+11 123 456 789"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      disabled={isLoading}
-                      placeholder="New NextCRM functionality"
+                      placeholder="制造业"
                       {...field}
                     />
                   </FormControl>
@@ -251,14 +232,14 @@ export function UpdateLeadForm({ initialData, setOpen }: NewTaskFormProps) {
             />
             <FormField
               control={form.control}
-              name="lead_source"
+              name="website"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lead source</FormLabel>
+                  <FormLabel>Website</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <Input
                       disabled={isLoading}
-                      placeholder="Website"
+                      placeholder="https://company.com"
                       {...field}
                     />
                   </FormControl>
@@ -268,14 +249,14 @@ export function UpdateLeadForm({ initialData, setOpen }: NewTaskFormProps) {
             />
             <FormField
               control={form.control}
-              name="refered_by"
+              name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Refered by</FormLabel>
+                  <FormLabel>Address</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <Input
                       disabled={isLoading}
-                      placeholder="Johny Walker"
+                      placeholder="公司地址"
                       {...field}
                     />
                   </FormControl>
@@ -285,14 +266,65 @@ export function UpdateLeadForm({ initialData, setOpen }: NewTaskFormProps) {
             />
             <FormField
               control={form.control}
-              name="campaign"
+              name="company_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Campaign</FormLabel>
+                  <FormLabel>Company Type</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={isLoading}
+                      placeholder="民营/国企"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="employee_scale"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Employee Scale</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={isLoading}
+                      placeholder="50-100人"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="introduction"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Introduction</FormLabel>
                   <FormControl>
                     <Textarea
                       disabled={isLoading}
-                      placeholder="Social networks"
+                      placeholder="公司简介"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lead_source_content"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Lead Source Content (JSON)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      disabled={isLoading}
+                      placeholder='{"source":"alibaba.com","desc":"公司简介..."}'
                       {...field}
                     />
                   </FormControl>

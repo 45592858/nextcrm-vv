@@ -64,13 +64,7 @@ model crm_Leads {
   createdBy          String?       @db.ObjectId
   updatedAt          DateTime?     @updatedAt @db.Date
   updatedBy          String?       @db.ObjectId
-  firstName          String?
-  lastName           String
-  company            String?
-  jobTitle           String?
-  email              String?
-  phone              String?
-  description        String?
+  company            String
   lead_source        String?
   refered_by         String?
   campaign           String?
@@ -82,6 +76,16 @@ model crm_Leads {
   assigned_accounts  crm_Accounts? @relation(fields: [accountsIDs], references: [id])
   documentsIDs       String[]      @db.ObjectId
   assigned_documents Documents[]   @relation(fields: [documentsIDs], references: [id])
+  region             String?       // 地区，如佛山-顺德区，广州-荔湾区等
+  contacts           String?       // 联系人 (所有联系人合集)（JSON）
+  memo               String?       // 备忘
+  industry           String?       // 所属行业
+  website            String?       // 公司网站
+  address            String?       // 公司地址
+  company_type       String?       // 公司性质，如民营/国企等
+  employee_scale     String?       // 员工规模，如 50-100人、500-1000人等
+  introduction       String?       // 公司简介/介绍
+  lead_source_content String?      // 来源关键内容，如公司简介等（JSON）
 }
 
 enum crm_Lead_Status {

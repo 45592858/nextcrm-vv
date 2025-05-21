@@ -24,7 +24,7 @@ export default function MyContactHistoriesPage({ userId }: { userId?: string }) 
             setHighlightContact={setHighlightContact}
           />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 pr-[10px]">
           <ContactHistoryMultiTrendChart
             userId={userId}
             highlightContact={highlightContact}
@@ -34,7 +34,9 @@ export default function MyContactHistoriesPage({ userId }: { userId?: string }) 
           />
         </div>
       </div>
-      <DataTable />
+      <div className="px-[10px]">
+        <DataTable />
+      </div>
     </Container>
   );
 } 

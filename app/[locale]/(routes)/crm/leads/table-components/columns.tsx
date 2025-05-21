@@ -62,16 +62,19 @@ export const columns: ColumnDef<Lead>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Company" />
     ),
-
-    cell: ({ row }) => (
-      <div className="">
-        {
-          //@ts-ignore
-          //TODO: fix this
-          row.getValue("company") ?? "Unassigned"
-        }
-      </div>
-    ),
+    cell: ({ row }) => {
+      const router = require('next/navigation').useRouter();
+      const locale = require('next-intl').useLocale();
+      return (
+        <div
+          className="cursor-pointer hover:underline"
+          onClick={() => router.push(`/${locale}/crm/leads/${row.original.id}`)}
+        >
+          {/* @ts-ignore */}
+          {row.getValue("company") ?? "Unassigned"}
+        </div>
+      );
+    },
     enableSorting: false,
     enableHiding: true,
   },
@@ -89,7 +92,63 @@ export const columns: ColumnDef<Lead>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Contacts" />
     ),
-    cell: ({ row }) => <div>{row.getValue("contacts")}</div>,
+    cell: ({ row }) => {
+      const router = require('next/navigation').useRouter();
+      const locale = require('next-intl').useLocale();
+      const value = row.getValue("contacts") as string;
+      let contacts: any[] = [];
+      let summary = '';
+      try {
+        contacts = JSON.parse(value || '[]');
+        if (Array.isArray(contacts) && contacts.length > 0) {
+          summary = contacts.map(c => c.name).filter(Boolean).join('、');
+        } else {
+          summary = value;
+        }
+      } catch {
+        summary = value;
+      }
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                className="max-w-[200px] truncate cursor-pointer text-ellipsis whitespace-nowrap hover:underline"
+                onClick={() => router.push(`/${locale}/crm/leads/${row.original.id}/contact-history`)}
+              >
+                {summary || '-'}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[600px] p-0">
+              {Array.isArray(contacts) && contacts.length > 0 ? (
+                <table className="min-w-[520px] text-xs border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="px-2 py-1 border-b font-semibold">姓名</th>
+                      <th className="px-2 py-1 border-b font-semibold">职位</th>
+                      <th className="px-2 py-1 border-b font-semibold">电话</th>
+                      <th className="px-2 py-1 border-b font-semibold">邮箱</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {contacts.map((c, i) => (
+                      <tr key={i}>
+                        <td className="px-2 py-1 border-b whitespace-nowrap">{c.name || '-'}</td>
+                        <td className="px-2 py-1 border-b whitespace-nowrap">{c.title || '-'}</td>
+                        <td className="px-2 py-1 border-b whitespace-nowrap">{c.phone || '-'}</td>
+                        <td className="px-2 py-1 border-b whitespace-nowrap">{c.email || '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="p-2">无联系人信息</div>
+              )}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
     enableSorting: false,
     enableHiding: true,
   },
@@ -98,7 +157,20 @@ export const columns: ColumnDef<Lead>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Memo" />
     ),
-    cell: ({ row }) => <div>{row.getValue("memo")}</div>,
+    cell: ({ row }) => {
+      const value = row.getValue("memo") as string;
+      if (!value) return null;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="max-w-[200px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[400px] whitespace-pre-line break-words">{value}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
     enableSorting: false,
     enableHiding: true,
   },
@@ -107,7 +179,20 @@ export const columns: ColumnDef<Lead>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Industry" />
     ),
-    cell: ({ row }) => <div>{row.getValue("industry")}</div>,
+    cell: ({ row }) => {
+      const value = row.getValue("industry") as string;
+      if (!value) return null;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="max-w-[200px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[400px] whitespace-pre-line break-words">{value}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
     enableSorting: false,
     enableHiding: true,
   },
@@ -125,7 +210,20 @@ export const columns: ColumnDef<Lead>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Address" />
     ),
-    cell: ({ row }) => <div>{row.getValue("address")}</div>,
+    cell: ({ row }) => {
+      const value = row.getValue("address") as string;
+      if (!value) return null;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="max-w-[200px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[400px] whitespace-pre-line break-words">{value}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
     enableSorting: false,
     enableHiding: true,
   },

@@ -29,3 +29,14 @@ export async function DELETE(req: Request, props: { params: Promise<{ leadId: st
     return new NextResponse("Initial error", { status: 500 });
   }
 }
+
+export async function GET(req: Request, { params }: { params: { leadId: string } }) {
+  const { leadId } = params;
+  const lead = await prismadb.crm_Leads.findUnique({
+    where: { id: leadId },
+  });
+  if (!lead) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+  return NextResponse.json(lead);
+}

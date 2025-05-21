@@ -182,7 +182,7 @@ export async function BasicView({ data }: OppsViewProps) {
                 <File className="mt-px h-5 w-5" />
                 <div className="space-y-1">
                   <p className="text-sm font-medium leading-none">Lead Source Content</p>
-                  <pre className="text-xs text-muted-foreground bg-muted rounded p-2 overflow-x-auto whitespace-pre-wrap break-all">
+                  <pre className="text-xs text-muted-foreground rounded p-2 overflow-x-auto whitespace-pre-wrap break-all">
                     {(() => {
                       try {
                         return JSON.stringify(JSON.parse(data.lead_source_content), null, 2);

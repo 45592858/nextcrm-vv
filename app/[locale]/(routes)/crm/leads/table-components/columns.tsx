@@ -63,16 +63,17 @@ export const columns: ColumnDef<Lead>[] = [
       <DataTableColumnHeader column={column} title="Company" />
     ),
     cell: ({ row }) => {
-      const router = require('next/navigation').useRouter();
       const locale = require('next-intl').useLocale();
       return (
-        <div
+        <a
           className="cursor-pointer hover:underline"
-          onClick={() => router.push(`/${locale}/crm/leads/${row.original.id}`)}
+          href={`/${locale}/crm/leads/${row.original.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
         >
           {/* @ts-ignore */}
           {row.getValue("company") ?? "Unassigned"}
-        </div>
+        </a>
       );
     },
     enableSorting: false,
@@ -93,7 +94,6 @@ export const columns: ColumnDef<Lead>[] = [
       <DataTableColumnHeader column={column} title="Contacts" />
     ),
     cell: ({ row }) => {
-      const router = require('next/navigation').useRouter();
       const locale = require('next-intl').useLocale();
       const value = row.getValue("contacts") as string;
       let contacts: any[] = [];
@@ -112,12 +112,14 @@ export const columns: ColumnDef<Lead>[] = [
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div
+              <a
                 className="max-w-[200px] truncate cursor-pointer text-ellipsis whitespace-nowrap hover:underline"
-                onClick={() => router.push(`/${locale}/crm/leads/${row.original.id}/contact-history`)}
+                href={`/${locale}/crm/leads/${row.original.id}/contact-history`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 {summary || '-'}
-              </div>
+              </a>
             </TooltipTrigger>
             <TooltipContent className="max-w-[600px] p-0">
               {Array.isArray(contacts) && contacts.length > 0 ? (

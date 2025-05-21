@@ -86,6 +86,37 @@ model crm_Leads {
   employee_scale     String?       // 员工规模，如 50-100人、500-1000人等
   introduction       String?       // 公司简介/介绍
   lead_source_content String?      // 来源关键内容，如公司简介等（JSON）
+  contact_histories  crm_Lead_Contact_Histories[]
+}
+
+model crm_Lead_Contact_Draft {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  v  Int    @default(0) @map("__v")
+
+  company            String
+  baidu_ai           String?
+  baidu_ai_status    String? @default("DRAFT")  // DRAFT: DONE: 已解析
+  gpt_o3             String?
+  gpt_o3_status      String? @default("DRAFT")  // DRAFT: DONE: 已解析
+  gpt_4o             String?
+  gpt_4o_status      String? @default("DRAFT")  // DRAFT: DONE: 已解析
+  createdAt          DateTime @default(now()) @db.Date
+  updatedAt          DateTime? @updatedAt @db.Date
+}
+
+model crm_Lead_Contact_Histories {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  lead_id         String   @db.ObjectId // 关联线索ID
+  user_id         String   @db.ObjectId // 销售人员ID
+  contact_time    DateTime // 联系时间
+  contact_method  String   // 联系方式（如 phone, wechat 等）
+  contact_through String   // 联系途径（记录如 电话号码、邮件地址、微信号、QQ号 等）
+  contact_result  String   // 联系结果（预设+自定义）
+  memo            String?  // 备忘
+  created_at      DateTime @default(now()) @db.Date
+  // 关系
+  lead            crm_Leads   @relation(fields: [lead_id], references: [id])
+  user            Users       @relation("UsersToLeadContactHistories", fields: [user_id], references: [id])
 }
 
 enum crm_Lead_Status {
@@ -603,6 +634,7 @@ model Users {
   watching_boards      Boards[]              @relation(name: "watching_users", fields: [watching_boardsIDs], references: [id])
   watching_accountsIDs String[]              @db.ObjectId
   watching_accounts    crm_Accounts[]        @relation(name: "watching_accounts", fields: [watching_accountsIDs], references: [id])
+  lead_contact_histories crm_Lead_Contact_Histories[] @relation("UsersToLeadContactHistories")
 }
 
 enum Language {

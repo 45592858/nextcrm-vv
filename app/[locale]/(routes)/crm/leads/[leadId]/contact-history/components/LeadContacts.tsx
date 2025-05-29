@@ -9,13 +9,7 @@ export default function LeadContacts({ leadId }: { leadId: string }) {
     fetch(`/api/crm/leads/${leadId}`)
       .then(res => res.json())
       .then(data => {
-        let arr: any[] = []
-        try {
-          arr = JSON.parse(data.contacts || '[]')
-        } catch {
-          arr = []
-        }
-        setContacts(Array.isArray(arr) ? arr : [])
+        setContacts(Array.isArray(data.contacts) ? data.contacts : [])
       })
   }, [leadId])
   return (
@@ -25,6 +19,7 @@ export default function LeadContacts({ leadId }: { leadId: string }) {
           <TableRow>
             <TableHead>姓名</TableHead>
             <TableHead>职位</TableHead>
+            <TableHead>称呼</TableHead>
             <TableHead>电话</TableHead>
             <TableHead>邮箱</TableHead>
           </TableRow>
@@ -39,6 +34,7 @@ export default function LeadContacts({ leadId }: { leadId: string }) {
               <TableRow key={i}>
                 <TableCell>{c.name || '-'}</TableCell>
                 <TableCell>{c.title || '-'}</TableCell>
+                <TableCell>{c.appellation || '-'}</TableCell>
                 <TableCell>{c.phone || '-'}</TableCell>
                 <TableCell>{c.email || '-'}</TableCell>
               </TableRow>

@@ -34,6 +34,7 @@ export async function GET(req: Request, { params }: { params: { leadId: string }
   const { leadId } = await params;
   const lead = await prismadb.crm_Leads.findUnique({
     where: { id: leadId },
+    include: { contacts: true },
   });
   if (!lead) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });

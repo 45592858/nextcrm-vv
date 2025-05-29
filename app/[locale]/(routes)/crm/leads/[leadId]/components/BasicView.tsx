@@ -81,7 +81,32 @@ export async function BasicView({ data }: OppsViewProps) {
                 <User className="mt-px h-5 w-5" />
                 <div className="space-y-1">
                   <p className="text-sm font-medium leading-none">Contacts</p>
-                  <p className="text-sm text-muted-foreground">{data.contacts}</p>
+                  {Array.isArray(data.contacts) && data.contacts.length > 0 ? (
+                    <table className="min-w-[320px] text-xs border-collapse">
+                      <thead>
+                        <tr>
+                          <th className="px-2 py-1 border-b font-semibold">姓名</th>
+                          <th className="px-2 py-1 border-b font-semibold">职位</th>
+                          <th className="px-2 py-1 border-b font-semibold">称呼</th>
+                          <th className="px-2 py-1 border-b font-semibold">电话</th>
+                          <th className="px-2 py-1 border-b font-semibold">邮箱</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {data.contacts.map((c: any, i: number) => (
+                          <tr key={c.id || i}>
+                              <td className="px-2 py-1 border-b whitespace-nowrap">{c.name || '-'}</td>
+                              <td className="px-2 py-1 border-b whitespace-nowrap">{c.title || '-'}</td>
+                              <td className="px-2 py-1 border-b whitespace-nowrap">{c.appellation || '-'}</td>
+                            <td className="px-2 py-1 border-b whitespace-nowrap">{c.phone || '-'}</td>
+                            <td className="px-2 py-1 border-b whitespace-nowrap">{c.email || '-'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="text-sm text-muted-foreground">无联系人信息</div>
+                  )}
                 </div>
               </div>
               <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">

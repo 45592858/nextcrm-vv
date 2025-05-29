@@ -95,19 +95,10 @@ export const columns: ColumnDef<Lead>[] = [
     ),
     cell: ({ row }) => {
       const locale = require('next-intl').useLocale();
-      const value = row.getValue("contacts") as string;
-      let contacts: any[] = [];
-      let summary = '';
-      try {
-        contacts = JSON.parse(value || '[]');
-        if (Array.isArray(contacts) && contacts.length > 0) {
-          summary = contacts.map(c => c.name).filter(Boolean).join('、');
-        } else {
-          summary = value;
-        }
-      } catch {
-        summary = value;
-      }
+      const contacts = row.original.contacts || [];
+      const summary = Array.isArray(contacts) && contacts.length > 0
+        ? contacts.map((c: any) => c.name).filter(Boolean).join('、')
+        : '';
       return (
         <TooltipProvider>
           <Tooltip>
@@ -128,15 +119,17 @@ export const columns: ColumnDef<Lead>[] = [
                     <tr>
                       <th className="px-2 py-1 border-b font-semibold">姓名</th>
                       <th className="px-2 py-1 border-b font-semibold">职位</th>
+                      <th className="px-2 py-1 border-b font-semibold">称呼</th>
                       <th className="px-2 py-1 border-b font-semibold">电话</th>
                       <th className="px-2 py-1 border-b font-semibold">邮箱</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {contacts.map((c, i) => (
-                      <tr key={i}>
+                    {contacts.map((c: any, i: number) => (
+                      <tr key={c.id || i}>
                         <td className="px-2 py-1 border-b whitespace-nowrap">{c.name || '-'}</td>
                         <td className="px-2 py-1 border-b whitespace-nowrap">{c.title || '-'}</td>
+                        <td className="px-2 py-1 border-b whitespace-nowrap">{c.appellation || '-'}</td>
                         <td className="px-2 py-1 border-b whitespace-nowrap">{c.phone || '-'}</td>
                         <td className="px-2 py-1 border-b whitespace-nowrap">{c.email || '-'}</td>
                       </tr>

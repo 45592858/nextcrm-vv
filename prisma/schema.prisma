@@ -77,7 +77,6 @@ model crm_Leads {
   documentsIDs       String[]      @db.ObjectId
   assigned_documents Documents[]   @relation(fields: [documentsIDs], references: [id])
   region             String?       // 地区，如佛山-顺德区，广州-荔湾区等
-  contacts           String?       // 联系人 (所有联系人合集)（JSON）
   memo               String?       // 备忘
   industry           String?       // 所属行业
   website            String?       // 公司网站
@@ -87,6 +86,26 @@ model crm_Leads {
   introduction       String?       // 公司简介/介绍
   lead_source_content String?      // 来源关键内容，如公司简介等（JSON）
   contact_histories  crm_Lead_Contact_Histories[]
+  contacts           crm_Lead_Contacts[]
+}
+
+model crm_Lead_Contacts {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  v  Int    @default(0) @map("__v")
+  lead_id   String @db.ObjectId
+  name      String?
+  title     String?
+  appellation String?
+  phone     String?
+  email     String?
+  others    String?   // 其它联系方式，如微信、QQ、Skype等
+  memo      String?   // 备忘
+  createdAt DateTime @default(now()) @db.Date
+  updatedAt DateTime? @updatedAt @db.Date
+  createdBy String? @db.ObjectId
+  updatedBy String? @db.ObjectId
+  lead      crm_Leads @relation(fields: [lead_id], references: [id])
+  histories crm_Lead_Contact_Histories[]
 }
 
 model crm_Lead_Contact_Draft {
@@ -107,16 +126,39 @@ model crm_Lead_Contact_Draft {
 model crm_Lead_Contact_Histories {
   id              String   @id @default(auto()) @map("_id") @db.ObjectId
   lead_id         String   @db.ObjectId // 关联线索ID
-  user_id         String   @db.ObjectId // 销售人员ID
-  contact_time    DateTime // 联系时间
-  contact_method  String   // 联系方式（如 phone, wechat 等）
-  contact_through String   // 联系途径（记录如 电话号码、邮件地址、微信号、QQ号 等）
-  contact_result  String   // 联系结果（预设+自定义）
+  lead_contact_id String   @db.ObjectId // 关联联系人ID
+  user_id         String?  @db.ObjectId // 销售人员ID
+  contact_time    DateTime? // 联系时间
+  contact_method  String?   // 联系方式（如 phone, wechat 等）
+  contact_through String?   // 联系途径（记录如 电话号码、邮件地址、微信号、QQ号 等）
+  contact_result  String?   // 联系结果（预设+自定义）
   memo            String?  // 备忘
   created_at      DateTime @default(now()) @db.Date
+  updated_at      DateTime @updatedAt @db.Date
+  // 针对自动邮件跟进
+  sequence_step   Int?      // 整数 // 1=线索创建 → 自动三封冷邮件 (跟进序列（3 + 1 法则）)
+  sequence_status String?   // open/replied/unsub/no-response
+  send_status     String?   // pending/sent/failed(invalid/blocked/spam/etc.)
+  last_email_at   DateTime? @default(now()) @db.Date
   // 关系
   lead            crm_Leads   @relation(fields: [lead_id], references: [id])
-  user            Users       @relation("UsersToLeadContactHistories", fields: [user_id], references: [id])
+  user            Users?      @relation("UsersToLeadContactHistories", fields: [user_id], references: [id])
+  lead_contact    crm_Lead_Contacts @relation(fields: [lead_contact_id], references: [id])
+}
+
+model crm_Lead_Mail_Template {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  sequence_step    Int      // 整数 // 1=线索创建 → 自动三封冷邮件 (跟进序列（3 + 1 法则）)
+  template_name    String   // 模板名称
+  en_title         String   // 英文标题
+  en_html_content  String   // 英文模板内容
+  en_text_content  String   // 英文模板内容
+  zh_title         String?   // 中文标题
+  zh_html_content  String?   // 中文模板内容
+  zh_text_content  String?   // 中文模板内容
+  status           String   // active/inactive
+  created_at       DateTime @default(now()) @db.Date
+  updated_at       DateTime @updatedAt @db.Date
 }
 
 enum crm_Lead_Status {

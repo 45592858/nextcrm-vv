@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 const contactMethods = [
   '电话',
@@ -38,10 +38,20 @@ export default function NewLeadContactHistoryForm({ leadId, onSuccess }: { leadI
     contact_result: '',
     custom_result: '',
     memo: '',
+    lead_contact_id: '',
   })
+  const [contacts, setContacts] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+
+  useEffect(() => {
+    fetch(`/api/crm/leads/${leadId}`)
+      .then(res => res.json())
+      .then(data => {
+        setContacts(Array.isArray(data.contacts) ? data.contacts : [])
+      })
+  }, [leadId])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -60,6 +70,11 @@ export default function NewLeadContactHistoryForm({ leadId, onSuccess }: { leadI
     setLoading(true)
     setError('')
     setSuccess('')
+    if (!form.lead_contact_id) {
+      setError('请选择联系人')
+      setLoading(false)
+      return
+    }
     try {
       const result = form.custom_result || form.contact_result
       const res = await fetch(`/api/crm/leads/${leadId}/contact-history`, {
@@ -69,7 +84,7 @@ export default function NewLeadContactHistoryForm({ leadId, onSuccess }: { leadI
       })
       if (!res.ok) throw new Error('提交失败')
       setSuccess('提交成功')
-      setForm({ contact_time: getNowDatetimeLocal(), contact_method: contactMethods[0], contact_through: '', contact_result: '', custom_result: '', memo: '' })
+      setForm({ contact_time: getNowDatetimeLocal(), contact_method: contactMethods[0], contact_through: '', contact_result: '', custom_result: '', memo: '', lead_contact_id: '' })
       if (onSuccess) onSuccess()
     } catch (err: any) {
       setError(err.message || '未知错误')
@@ -82,6 +97,18 @@ export default function NewLeadContactHistoryForm({ leadId, onSuccess }: { leadI
     <div>
       <h2 className="font-bold mb-2">新增跟进记录</h2>
       <form onSubmit={handleSubmit} className="space-y-2">
+        <select name="lead_contact_id" value={form.lead_contact_id} onChange={handleChange} required className="border rounded px-2 py-1 w-full">
+          <option value="">请选择联系人</option>
+          {contacts.map(c => {
+            const arr = [];
+            if (c.name) arr.push(c.name);
+            if (c.phone) arr.push(c.phone);
+            if (c.email) arr.push(c.email);
+            return (
+              <option key={c.id} value={c.id}>{arr.join(', ') || c.id}</option>
+            );
+          })}
+        </select>
         <input type="datetime-local" name="contact_time" value={form.contact_time} onChange={handleChange} required className="border rounded px-2 py-1 w-full" />
         <select name="contact_method" value={form.contact_method} onChange={handleChange} required className="border rounded px-2 py-1 w-full">
           {contactMethods.map(opt => <option key={opt} value={opt}>{opt}</option>)}

@@ -144,6 +144,7 @@ export async function GET(req: Request) {
     include: {
       lead: { select: { id: true, company: true } },
       user: true,
+      lead_contact: { select: { name: true } },
     },
   });
   return NextResponse.json({ data, total });

@@ -8,6 +8,7 @@ export const getLeads = async () => {
           name: true,
         },
       },
+      contacts: true,
     },
     orderBy: {
       createdAt: "desc",

@@ -3,6 +3,7 @@ import Container from "@/app/[locale]/(routes)/components/ui/Container";
 import React from "react";
 import { BasicView } from "./components/BasicView";
 import DocumentsView from "../../components/DocumentsView";
+import SendMailButton from "./components/SendMailButton";
 
 interface LeadDetailPageProps {
   params: Promise<{
@@ -25,6 +26,7 @@ const LeadDetailPage = async (props: LeadDetailPageProps) => {
       <div className="space-y-5">
         <BasicView data={lead} />
         {/*         <DocumentsView data={lead?.documents} /> */}
+        <SendMailButton leadId={leadId} />
       </div>
     </Container>
   );

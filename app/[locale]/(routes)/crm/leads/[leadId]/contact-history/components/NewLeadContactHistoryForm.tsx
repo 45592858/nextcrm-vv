@@ -34,7 +34,7 @@ export default function NewLeadContactHistoryForm({ leadId, onSuccess }: { leadI
   const [form, setForm] = useState({
     contact_time: getNowDatetimeLocal(),
     contact_method: contactMethods[0],
-    contact_through: '',
+    contact_value: '',
     contact_result: '',
     custom_result: '',
     memo: '',
@@ -84,7 +84,7 @@ export default function NewLeadContactHistoryForm({ leadId, onSuccess }: { leadI
       })
       if (!res.ok) throw new Error('提交失败')
       setSuccess('提交成功')
-      setForm({ contact_time: getNowDatetimeLocal(), contact_method: contactMethods[0], contact_through: '', contact_result: '', custom_result: '', memo: '', lead_contact_id: '' })
+      setForm({ contact_time: getNowDatetimeLocal(), contact_method: contactMethods[0], contact_value: '', contact_result: '', custom_result: '', memo: '', lead_contact_id: '' })
       if (onSuccess) onSuccess()
     } catch (err: any) {
       setError(err.message || '未知错误')
@@ -113,7 +113,7 @@ export default function NewLeadContactHistoryForm({ leadId, onSuccess }: { leadI
         <select name="contact_method" value={form.contact_method} onChange={handleChange} required className="border rounded px-2 py-1 w-full">
           {contactMethods.map(opt => <option key={opt} value={opt}>{opt}</option>)}
         </select>
-        <input type="text" name="contact_through" value={form.contact_through} onChange={handleChange} placeholder="联系号码/邮箱" required className="border rounded px-2 py-1 w-full" />
+        <input type="text" name="contact_value" value={form.contact_value} onChange={handleChange} placeholder="联系号码/邮箱" required className="border rounded px-2 py-1 w-full" />
         <div className="flex gap-2">
           <select name="contact_result" value={form.contact_result} onChange={handleResultChange} className="border rounded px-2 py-1 w-full">
             <option value="">请选择联系结果</option>

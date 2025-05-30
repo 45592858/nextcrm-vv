@@ -129,8 +129,8 @@ model crm_Lead_Contact_Histories {
   lead_contact_id String   @db.ObjectId // 关联联系人ID
   user_id         String?  @db.ObjectId // 销售人员ID
   contact_time    DateTime? // 联系时间
-  contact_method  String?   // 联系方式（如 phone, wechat 等）
-  contact_through String?   // 联系途径（记录如 电话号码、邮件地址、微信号、QQ号 等）
+  contact_method  String?   // 联系渠道（如 email/phone/sms/wechat 等）
+  contact_value   String?   // 具体联系方式（如邮箱/手机号/微信号等）
   contact_result  String?   // 联系结果（预设+自定义）
   memo            String?  // 备忘
   created_at      DateTime @default(now()) @db.Date
@@ -139,7 +139,8 @@ model crm_Lead_Contact_Histories {
   sequence_step   Int?      // 整数 // 1=线索创建 → 自动三封冷邮件 (跟进序列（3 + 1 法则）)
   sequence_status String?   // open/replied/unsub/no-response
   send_status     String?   // pending/sent/failed(invalid/blocked/spam/etc.)
-  last_email_at   DateTime? @default(now()) @db.Date
+  last_email_at   DateTime? @db.Date
+  queue_id        String?   @db.ObjectId // 关联 mail_queue.id
   // 关系
   lead            crm_Leads   @relation(fields: [lead_id], references: [id])
   user            Users?      @relation("UsersToLeadContactHistories", fields: [user_id], references: [id])
@@ -736,4 +737,33 @@ model gpt_models {
 enum gptStatus {
   ACTIVE
   INACTIVE
+}
+
+model mail_queue {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  lead_id         String   @db.ObjectId
+  lead_contact_id String   @db.ObjectId
+  step            Int
+  from            String
+  fromName        String
+  to              String
+  subject         String
+  html            String
+  plain           String
+  status          String   // pending/sent/failed
+  send_time       DateTime?
+  mail_id         String?
+  error_msg       String?
+  created_at      DateTime @default(now()) @db.Date
+  updated_at      DateTime @updatedAt @db.Date
+}
+
+model mail_log {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  type      String   // send/status/reply
+  queue_id  String?  @db.ObjectId // 关联 mail_queue.id
+  mail_id   String?  // 邮件服务返回的唯一ID
+  payload   String?  // 原始请求/回调内容（JSON字符串）
+  result    String?  // 结果/响应内容（JSON字符串）
+  created_at DateTime @default(now()) @db.Date
 }

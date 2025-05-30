@@ -20,7 +20,7 @@ export async function POST(req: Request, { params }: { params: { leadId: string 
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { leadId } = await params;
   const body = await req.json()
-  const { contact_time, contact_method, contact_through, contact_result, memo, lead_contact_id } = body
+  const { contact_time, contact_method, contact_value, contact_result, memo, lead_contact_id } = body
   if (!lead_contact_id) {
     return NextResponse.json({ error: '必须选择联系人' }, { status: 400 })
   }
@@ -32,7 +32,7 @@ export async function POST(req: Request, { params }: { params: { leadId: string 
       user_id,
       contact_time: new Date(contact_time),
       contact_method,
-      contact_through,
+      contact_value,
       contact_result,
       memo,
     },

@@ -7,7 +7,7 @@ interface History {
   id: string;
   contact_time: string;
   contact_method: string;
-  contact_through: string;
+  contact_value: string;
   contact_result: string;
   memo?: string;
   user?: { name?: string };
@@ -49,7 +49,7 @@ export default function DataTable() {
                 <TableCell>{h.lead?.company || ''}</TableCell>
                 <TableCell>{h.lead_contact?.name || '-'}</TableCell>
                 <TableCell>{h.contact_method}</TableCell>
-                <TableCell>{h.contact_through}</TableCell>
+                <TableCell>{h.contact_value}</TableCell>
                 <TableCell>{h.contact_result}</TableCell>
                 <TableCell>{h.memo}</TableCell>
                 <TableCell>{h.user?.name}</TableCell>

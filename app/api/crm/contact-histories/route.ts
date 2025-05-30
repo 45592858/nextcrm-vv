@@ -156,7 +156,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const body = await req.json();
-  const { lead_id, contact_time, contact_method, contact_result, memo } = body;
+  const { lead_id, contact_time, contact_method, contact_value, contact_result, memo } = body;
 
   if (!lead_id || !contact_time || !contact_method || !contact_result) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -169,7 +169,7 @@ export async function POST(req: Request) {
         user_id: session.user.id,
         contact_time: new Date(contact_time),
         contact_method,
-        contact_through: '',
+        contact_value,
         contact_result,
         memo,
         created_at: new Date(),

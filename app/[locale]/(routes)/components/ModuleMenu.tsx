@@ -68,6 +68,7 @@ const ModuleMenu = ({ modules, dict, build }: Props) => {
             <button className="text-center text-left w-full hover:bg-slate-700 hover:text-gray-200 rounded-md p-2" onClick={() => router.push("/crm/opportunities")}>{dict.ModuleMenu.crm.opportunities}</button>
             <button className="text-center text-left w-full hover:bg-slate-700 hover:text-gray-200 rounded-md p-2" onClick={() => router.push("/crm/accounts")}>{dict.ModuleMenu.crm.accounts}</button>
             <button className="text-center text-left w-full hover:bg-slate-700 hover:text-gray-200 rounded-md p-2" onClick={() => router.push("/crm/contacts")}>{dict.ModuleMenu.crm.contacts}</button>
+            <button className="text-center text-left w-full hover:bg-slate-700 hover:text-gray-200 rounded-md p-2" onClick={() => router.push("/crm/mail-templates")}>{dict.ModuleMenu.crm.mailTemplates}</button>
           </div>
         </div>
       </div>

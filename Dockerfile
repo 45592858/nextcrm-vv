@@ -57,6 +57,3 @@ EXPOSE 3000
 
 # Check if pnpm is installed
 RUN pnpm --version || echo "pnpm not found"
-
-# Use npx to run pnpm
-CMD [ "npx", "pnpm", "start" ]

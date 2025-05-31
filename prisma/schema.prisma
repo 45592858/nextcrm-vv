@@ -678,6 +678,7 @@ model Users {
   watching_accountsIDs String[]              @db.ObjectId
   watching_accounts    crm_Accounts[]        @relation(name: "watching_accounts", fields: [watching_accountsIDs], references: [id])
   lead_contact_histories crm_Lead_Contact_Histories[] @relation("UsersToLeadContactHistories")
+  auto_mailer_config   auto_mailer_configs[]
 }
 
 enum Language {
@@ -766,4 +767,15 @@ model mail_log {
   payload   String?  // 原始请求/回调内容（JSON字符串）
   result    String?  // 结果/响应内容（JSON字符串）
   created_at DateTime @default(now()) @db.Date
+}
+
+model auto_mailer_configs {
+  id                String @id @default(auto()) @map("_id") @db.ObjectId
+  v                 Int    @default(0) @map("__v")
+  user              String @db.ObjectId
+  mail_address      String
+  mail_from_name_en String
+  mail_from_name_cn String
+  contact_no        String
+  assigned_user     Users? @relation(fields: [user], references: [id])
 }

@@ -4,7 +4,7 @@ Next step is to update invoice metadata from annotation in database (invoice tab
 TODO: think about how to handle annotation files security - now they are public
 */
 import { authOptions } from "@/lib/auth";
-import { s3Client } from "@/lib/digital-ocean-s3";
+import { getS3Client } from "@/lib/digital-ocean-s3";
 import { getRossumToken } from "@/lib/get-rossum-token";
 import { prismadb } from "@/lib/prisma";
 import { PutObjectAclCommand, PutObjectCommand } from "@aws-sdk/client-s3";
@@ -324,6 +324,7 @@ export async function GET(req: Request, props: { params: Promise<{ annotationId:
     ACL: "public-read" as const,
   };
 
+  const s3Client = getS3Client();
   await s3Client.send(new PutObjectCommand(bucketParamsJSON));
 
   //S3 bucket url for the invoice

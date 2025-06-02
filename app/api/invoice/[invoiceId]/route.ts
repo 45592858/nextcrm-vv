@@ -1,5 +1,5 @@
 import { authOptions } from "@/lib/auth";
-import { s3Client } from "@/lib/digital-ocean-s3";
+import { getS3Client } from "@/lib/digital-ocean-s3";
 import { prismadb } from "@/lib/prisma";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getServerSession } from "next-auth";
@@ -80,6 +80,7 @@ export async function DELETE(request: Request, props: { params: Promise<{ invoic
           invoiceData?.invoice_file_url?.split("/").slice(-1)[0]
         }`,
       };
+      const s3Client = getS3Client();
       await s3Client.send(new DeleteObjectCommand(bucketParams));
       console.log("Success - invoice deleted from S3 bucket");
     }
@@ -93,6 +94,7 @@ export async function DELETE(request: Request, props: { params: Promise<{ invoic
           invoiceData?.rossum_annotation_json_url?.split("/").slice(-1)[0]
         }`,
       };
+      const s3Client = getS3Client();
       await s3Client.send(new DeleteObjectCommand(bucketParams));
       console.log("Success - rossum annotation json deleted from S3 bucket");
     }
@@ -106,6 +108,7 @@ export async function DELETE(request: Request, props: { params: Promise<{ invoic
           invoiceData?.rossum_annotation_xml_url?.split("/").slice(-1)[0]
         }`,
       };
+      const s3Client = getS3Client();
       await s3Client.send(new DeleteObjectCommand(bucketParams));
       console.log("Success - rossum annotation xml deleted from S3 bucket");
     }
@@ -117,6 +120,7 @@ export async function DELETE(request: Request, props: { params: Promise<{ invoic
         Bucket: process.env.DO_BUCKET,
         Key: `xml/${invoiceData?.money_s3_url?.split("/").slice(-1)[0]}`,
       };
+      const s3Client = getS3Client();
       await s3Client.send(new DeleteObjectCommand(bucketParams));
       console.log("Success - money S3 xml deleted from S3 bucket");
     }

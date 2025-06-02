@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
 // 获取联系历史列表
-export async function GET(req: Request, { params }: { params: { leadId: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ leadId: string }> }) {
   const { leadId } = await params;
   const histories = await prismadb.crm_Lead_Contact_Histories.findMany({
     where: { lead_id: leadId },
@@ -15,7 +15,7 @@ export async function GET(req: Request, { params }: { params: { leadId: string }
 }
 
 // 新增联系历史
-export async function POST(req: Request, { params }: { params: { leadId: string } }) {
+export async function POST(req: Request, { params }: { params: Promise<{ leadId: string }> }) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { leadId } = await params;

@@ -69,7 +69,8 @@ export async function GET(req: Request) {
       const d = format(subDays(startOfDay(now), 29 - i), 'yyyy-MM-dd');
       days[d] = 0;
     }
-    all.forEach((item: { contact_time: Date }) => {
+    all.forEach((item: { contact_time: Date | null }) => {
+      if (!item.contact_time) return;
       const d = format(item.contact_time, 'yyyy-MM-dd');
       if (days[d] !== undefined) days[d]++;
     });
@@ -89,6 +90,7 @@ export async function GET(req: Request) {
     // 统计每个跟进人总数（饼状图）
     const pieMap: Record<string, number> = {};
     histories.forEach(h => {
+      if (!h.user_id) return;
       if (!pieMap[h.user_id]) pieMap[h.user_id] = 0;
       pieMap[h.user_id]++;
     });
@@ -123,6 +125,7 @@ export async function GET(req: Request) {
       });
     });
     histories.forEach(h => {
+      if (!h.contact_time || !h.user_id) return;
       const date = format(h.contact_time, 'yyyy-MM-dd');
       const name = userNameMap[h.user_id] || h.user_id;
       if (trendMap[date]) {
@@ -156,7 +159,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const body = await req.json();
-  const { lead_id, contact_time, contact_method, contact_value, contact_result, memo } = body;
+  const { lead_id, contact_time, contact_method, contact_value, contact_result, memo, lead_contact_id } = body;
 
   if (!lead_id || !contact_time || !contact_method || !contact_result) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -166,6 +169,7 @@ export async function POST(req: Request) {
     const record = await prismadb.crm_Lead_Contact_Histories.create({
       data: {
         lead_id,
+        lead_contact_id,
         user_id: session.user.id,
         contact_time: new Date(contact_time),
         contact_method,

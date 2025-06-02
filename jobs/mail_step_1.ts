@@ -1,14 +1,18 @@
 // 发送第二封冷邮件（step_1）
-const cron = require('node-cron');
+import cron from 'node-cron';
 const { PrismaClient } = require('@prisma/client');
 require('dotenv').config();
 const setting = require('./setting.json');
 
 const prisma = new PrismaClient();
 
-function fillTemplate(template, lead, vars = {}) {
+function fillTemplate(
+  template: string,
+  lead: Record<string, any>,
+  vars: Record<string, any> = {}
+): string {
   if (!template) return '';
-  return template.replace(/\{\{(\w+)\}\}/g, (_, key) => {
+  return template.replace(/\{\{(\w+)\}\}/g, (_: string, key: string) => {
     if (vars[key] !== undefined) return vars[key];
     if (lead[key] !== undefined) return lead[key];
     return '';

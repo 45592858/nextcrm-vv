@@ -148,7 +148,7 @@ export function NewLeadForm({ users, accounts }: NewTaskFormProps) {
               name="company"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel required>Company</FormLabel>
+                  <FormLabel>Company</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isLoading}

@@ -3,8 +3,8 @@ import { prismadb } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const template = await prismadb.crm_Lead_Mail_Template.findUnique({
     where: { id },
   });
@@ -14,12 +14,12 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   return NextResponse.json(template);
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return new NextResponse("Unauthenticated", { status: 401 });
   }
-  const { id } = params;
+  const { id } = await params;
   const body = await req.json();
   try {
     const updated = await prismadb.crm_Lead_Mail_Template.update({
@@ -32,12 +32,12 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return new NextResponse("Unauthenticated", { status: 401 });
   }
-  const { id } = params;
+  const { id } = await params;
   try {
     await prismadb.crm_Lead_Mail_Template.delete({
       where: { id },

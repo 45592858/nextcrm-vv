@@ -1,5 +1,5 @@
 import { authOptions } from "@/lib/auth";
-import { s3Client } from "@/lib/digital-ocean-s3";
+import { getS3Client } from "@/lib/digital-ocean-s3";
 import { prismadb } from "@/lib/prisma";
 import { fillXmlTemplate } from "@/lib/xml-generator";
 import { PutObjectAclCommand, PutObjectCommand } from "@aws-sdk/client-s3";
@@ -56,6 +56,7 @@ export async function GET(req: Request, props: { params: Promise<{ invoiceId: st
     ACL: "public-read" as const,
   };
 
+  const s3Client = getS3Client();
   await s3Client.send(new PutObjectCommand(bucketParamsJSON));
 
   //S3 bucket url for the invoice

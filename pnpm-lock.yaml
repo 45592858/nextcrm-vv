@@ -231,6 +231,9 @@ importers:
       react-youtube:
         specifier: ^10.1.0
         version: 10.1.0(react@19.0.0-rc-66855b96-20241106)
+      recharts:
+        specifier: ^2.15.3
+        version: 2.15.3(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
       resend:
         specifier: 4.0.1-alpha.0
         version: 4.0.1-alpha.0(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
@@ -4534,11 +4537,11 @@ packages:
       react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
       react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
 
-  react-smooth@4.0.1:
-    resolution: {integrity: sha512-OE4hm7XqR0jNOq3Qmk9mFLyd6p2+j6bvbPJ7qlB7+oo0eNcL2l7WQzG6MBnT3EXY6xzkLMUBec3AfewJdA0J8w==}
+  react-smooth@4.0.4:
+    resolution: {integrity: sha512-gnGKTpYwqL0Iii09gHobNolvX4Kiq4PKx6eWBCYYix+8cdw+cGo3do906l1NBPKkSWx1DghC1dlWG9L2uGd61Q==}
     peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   react-style-singleton@2.2.1:
     resolution: {integrity: sha512-ZWj0fHEMyWkHzKYUr2Bs/4zU6XLmq9HsgBURm7g5pAVfyn49DgUiNgY2d4lXRlYSiCif9YBGpQleewkcqddc7g==}
@@ -4596,12 +4599,12 @@ packages:
   recharts-scale@0.4.5:
     resolution: {integrity: sha512-kivNFO+0OcUNu7jQquLXAxz1FIwZj8nrj+YkOKc5694NbjCvcT6aSZiIzNzd2Kul4o4rTto8QVR9lMNtxD4G1w==}
 
-  recharts@2.13.3:
-    resolution: {integrity: sha512-YDZ9dOfK9t3ycwxgKbrnDlRC4BHdjlY73fet3a0C1+qGMjXVZe6+VXmpOIIhzkje5MMEL8AN4hLIe4AMskBzlA==}
+  recharts@2.15.3:
+    resolution: {integrity: sha512-EdOPzTwcFSuqtvkDoaM5ws/Km1+WTAO2eizL7rqiG0V2UVhTnz0m7J2i0CjVPUCdEkZImaWvXLbZDS2H5t6GFQ==}
     engines: {node: '>=14'}
     peerDependencies:
-      react: ^16.0.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
+      react: ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   redux@4.2.1:
     resolution: {integrity: sha512-LAUYz4lc+Do8/g7aeRa8JkyDErK6ekstQaqWQrNRW//MY1TvCEpMtpTWvlQ+FPbWCx+Xixu/6SHt5N0HR+SB4w==}
@@ -7551,7 +7554,7 @@ snapshots:
       react-day-picker: 8.10.1(date-fns@3.6.0)(react@19.0.0-rc-66855b96-20241106)
       react-dom: 19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106)
       react-transition-state: 2.1.3(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
-      recharts: 2.13.3(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
+      recharts: 2.15.3(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
       tailwind-merge: 2.5.4
     transitivePeerDependencies:
       - tailwindcss
@@ -10447,7 +10450,7 @@ snapshots:
       react: 19.0.0-rc-66855b96-20241106
       react-dom: 19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106)
 
-  react-smooth@4.0.1(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106):
+  react-smooth@4.0.4(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106):
     dependencies:
       fast-equals: 5.0.1
       prop-types: 15.8.1
@@ -10532,7 +10535,7 @@ snapshots:
     dependencies:
       decimal.js-light: 2.5.1
 
-  recharts@2.13.3(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106):
+  recharts@2.15.3(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106):
     dependencies:
       clsx: 2.1.1
       eventemitter3: 4.0.7
@@ -10540,7 +10543,7 @@ snapshots:
       react: 19.0.0-rc-66855b96-20241106
       react-dom: 19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106)
       react-is: 18.3.1
-      react-smooth: 4.0.1(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
+      react-smooth: 4.0.4(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
       recharts-scale: 0.4.5
       tiny-invariant: 1.3.3
       victory-vendor: 36.9.2

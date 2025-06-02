@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import { prismadb } from '@/lib/prisma';
 import setting from '@/jobs/setting.json';
 
-export async function POST(req: Request, { params }: { params: { leadId: string } }) {
-  const { leadId } = params;
+export async function POST(req: Request, { params }: { params: Promise<{ leadId: string }> }) {
+  const { leadId } = await params;
   // 查找 lead 及第一个联系人
   const lead = await prismadb.crm_Leads.findUnique({
     where: { id: leadId },

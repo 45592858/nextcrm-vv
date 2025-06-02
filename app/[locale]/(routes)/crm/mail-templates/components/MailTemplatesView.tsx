@@ -32,7 +32,7 @@ const MailTemplatesView = ({ data }: any) => {
         {!data || data.length === 0 ? (
           "暂无邮件模板"
         ) : (
-          <MailTemplateDataTable data={data} columns={columns} onRowDoubleClick={(id: string) => router.push(`/crm/mail-templates/${id}`)} />
+          <MailTemplateDataTable data={data} columns={columns as any} onRowDoubleClick={(id: string) => router.push(`/crm/mail-templates/${id}`)} />
         )}
       </CardContent>
     </Card>

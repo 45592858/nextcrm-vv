@@ -3,7 +3,7 @@ import { getMailTemplateById } from "../../../../../actions/crm/get-mail-templat
 import Container from "../../../components/ui/Container";
 import { NewMailTemplateForm } from "../components/NewMailTemplateForm";
 
-export default async function EditMailTemplatePage({ params }: { params: { id: string } }) {
+export default async function EditMailTemplatePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const template = await getMailTemplateById(id);
   if (!template) return notFound();

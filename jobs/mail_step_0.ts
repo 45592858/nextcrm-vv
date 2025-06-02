@@ -1,5 +1,5 @@
 // 发送初次邮件破冰(冷邮件)
-const cron = require('node-cron');
+import cron from 'node-cron';
 const { PrismaClient } = require("@prisma/client");
 const setting = require('./setting.json');
 
@@ -18,13 +18,6 @@ function fillTemplate(
     return '';
   });
 }
-
-// todo: 从lead中获取
-const zh_vars = {
-  APPELLATION: '王经理', // 假设你有联系人对象
-  SENDER: '杨健明',
-  MOBILE: '13800138000'
-};
 
 async function processMailStep0() {
   // 1. 查询待处理的历史记录
@@ -52,15 +45,42 @@ async function processMailStep0() {
     });
     if (!lead) continue;
 
-    // 4. 填充模板
+    // 4. 读取联系人
+    const contact = await prisma.crm_Lead_Contacts.findUnique({
+      where: { id: history.lead_contact_id },
+    });
+    if (!contact) continue;
+
+    // 5. 读取 Auto Mailer 配置
+    // 先查 lead.createdBy，再查 user 配置
+    let userId = lead.createdBy;
+    if (!userId && lead.assigned_to) userId = lead.assigned_to;
+    if (!userId) continue;
+    const autoMailer = await prisma.auto_mailer_configs.findFirst({
+      where: { user: userId },
+    });
+    if (!autoMailer) continue;
+
+    // 6. 组装变量
+    const zh_vars = {
+      APPELLATION: contact.appellation || '',
+      SENDER: autoMailer.mail_from_name_cn || '',
+      MOBILE: autoMailer.contact_no || '',
+    };
+
+    // 7. 填充模板
     const mailTitle = fillTemplate(template.zh_title || '', lead, zh_vars);
     const mailHtml = fillTemplate(template.zh_html_content || '', lead, zh_vars);
     const mailText = fillTemplate(template.zh_text_content || '', lead, zh_vars);
 
-    // 5. 生成完整邮件内容并插入 mail_queue
-    const from = setting.SENDCLOUD_FROM;
-    const fromName = setting.SENDCLOUD_FROM_NAME;
-    const to = 'gmyjm@qq.com'; // TODO: 替换为实际联系人邮箱
+    // 8. 生成完整邮件内容并插入 mail_queue
+    const from = autoMailer.mail_address;
+    const fromName = autoMailer.mail_from_name_cn;
+    const to = contact.email;
+    if (!to) {
+       console.log(`[mail_step_0] 无效的邮箱地址: ${to}, lead_id: ${history.lead_id}, contact_id: ${contact.id}`);
+       continue;
+    }
     const queue = await prisma.mail_queue.create({
       data: {
         lead_id: history.lead_id,
@@ -75,7 +95,7 @@ async function processMailStep0() {
         status: 'pending',
       },
     });
-    // 6. 更新 send_status 和 queue_id
+    // 9. 更新 send_status 和 queue_id
     await prisma.crm_Lead_Contact_Histories.update({
       where: { id: history.id },
       data: { send_status: 'queued', queue_id: queue.id },

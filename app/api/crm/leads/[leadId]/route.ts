@@ -30,7 +30,7 @@ export async function DELETE(req: Request, props: { params: Promise<{ leadId: st
   }
 }
 
-export async function GET(req: Request, { params }: { params: { leadId: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ leadId: string }> }) {
   const { leadId } = await params;
   const lead = await prismadb.crm_Leads.findUnique({
     where: { id: leadId },

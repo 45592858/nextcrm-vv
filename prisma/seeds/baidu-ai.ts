@@ -1,9 +1,9 @@
 // prisma/seeds/get-leads.ts
 
-const { PrismaClient } = require("@prisma/client");
-const fs = require("fs");
-const path = require("path");
-const glob = require("glob");
+import { PrismaClient } from "@prisma/client";
+import fs from "fs";
+import path from "path";
+import glob from "glob";
 
 const prisma = new PrismaClient();
 

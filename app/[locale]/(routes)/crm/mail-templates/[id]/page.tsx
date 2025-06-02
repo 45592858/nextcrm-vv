@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default async function MailTemplateDetailPage({ params }: { params: { id: string } }) {
+export default async function MailTemplateDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const template = await getMailTemplateById(id);
   if (!template) return notFound();

@@ -13,9 +13,36 @@ import { Separator } from "@/components/ui/separator";
 import RightViewModal from "@/components/modals/right-view-modal";
 
 import { columns } from "../leads/table-components/columns";
+import { Lead } from "../leads/table-data/schema";
 import { NewLeadForm } from "../leads/components/NewLeadForm";
 import { LeadDataTable } from "../leads/table-components/data-table";
 import { useRouter } from "next/navigation";
+
+// 递归将对象所有 null 转为 undefined
+function nullsToUndefined(obj: any): any {
+  if (Array.isArray(obj)) return obj.map(nullsToUndefined);
+  if (obj && typeof obj === 'object') {
+    const res: any = {};
+    for (const k in obj) {
+      const v = obj[k];
+      res[k] = v === null ? undefined : nullsToUndefined(v);
+    }
+    return res;
+  }
+  return obj;
+}
+
+// 修正 lead 列表的日期类型，递归修 contacts
+function fixLeadDates(item: any) {
+  return {
+    ...item,
+    createdAt: item.createdAt ? new Date(item.createdAt) : undefined,
+    updatedAt: item.updatedAt ? new Date(item.updatedAt) : undefined,
+    contacts: Array.isArray(item.contacts)
+      ? item.contacts.map((c: any) => ({ ...c }))
+      : item.contacts,
+  };
+}
 
 const LeadsView = ({ data, crmData }: any) => {
   const router = useRouter();
@@ -57,7 +84,10 @@ const LeadsView = ({ data, crmData }: any) => {
           (data.length === 0 ? (
             "No assigned leads found"
           ) : (
-            <LeadDataTable data={data} columns={columns} />
+            <LeadDataTable
+              data={(data as any[]).map(fixLeadDates) as any}
+              columns={columns as any}
+            />
           ))}
       </CardContent>
     </Card>

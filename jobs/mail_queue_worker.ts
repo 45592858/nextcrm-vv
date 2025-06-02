@@ -1,5 +1,5 @@
 // 发送 mail_queue 队列中的邮件
-const cron = require('node-cron');
+import cron from 'node-cron';
 const { PrismaClient } = require('@prisma/client');
 const axios = require('axios');
 require('dotenv').config();

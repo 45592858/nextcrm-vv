@@ -1,4 +1,4 @@
-1）服务器上 git 同步最新的代码
+1）服务器上 git 同步最新的代码：git pull
 2）停止服务：docker compose down
 3）重新构建：docker compose build
 4）启动服务：docker compose up -d

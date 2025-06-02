@@ -1,5 +1,7 @@
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-var-requires */
 // 发送 mail_queue 队列中的邮件
-import cron from 'node-cron';
+const cron = require('node-cron');
 const { PrismaClient } = require('@prisma/client');
 const axios = require('axios');
 require('dotenv').config();

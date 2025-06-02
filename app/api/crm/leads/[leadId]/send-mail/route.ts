@@ -1,10 +1,23 @@
 import { NextResponse } from 'next/server';
 import { prismadb } from '@/lib/prisma';
-import setting from '@/jobs/setting.json';
+import { fillTemplate, getMailVars } from '@/lib/mailTemplate';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 export async function POST(req: Request, { params }: { params: Promise<{ leadId: string }> }) {
   const { leadId } = await params;
-  // 查找 lead 及第一个联系人
+  let contactId: string | undefined = undefined;
+  let body: any = {};
+  try {
+    body = await req.json();
+    contactId = body.contactId;
+  } catch (e) {
+    // 兼容无 body 情况
+  }
+  if (!contactId) {
+    return NextResponse.json({ error: '缺少联系人ID' }, { status: 400 });
+  }
+  // 查找 lead 及联系人
   const lead = await prismadb.crm_Leads.findUnique({
     where: { id: leadId },
     include: { contacts: true },
@@ -12,7 +25,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ leadId:
   if (!lead || !lead.contacts.length) {
     return NextResponse.json({ error: '无联系人' }, { status: 400 });
   }
-  const contact = lead.contacts[0];
+  const contact = lead.contacts.find((c: any) => c.id === contactId);
+  if (!contact) {
+    return NextResponse.json({ error: '未找到联系人' }, { status: 400 });
+  }
   if (!contact.email) {
     return NextResponse.json({ error: '联系人无邮箱' }, { status: 400 });
   }
@@ -24,25 +40,36 @@ export async function POST(req: Request, { params }: { params: Promise<{ leadId:
   if (!template) {
     return NextResponse.json({ error: '无可用模板' }, { status: 400 });
   }
-  // 填充模板
-  function fillTemplate(templateStr: string, lead: any, contact: any) {
-    return templateStr.replace(/\{\{(\w+)\}\}/g, (_, key) => {
-      if (contact[key] !== undefined) return contact[key];
-      if (lead[key] !== undefined) return lead[key];
-      return '';
-    });
+  // 优先用当前登录用户的 userId 查找 auto_mailer_configs
+  let userId: string | undefined = undefined;
+  const session = await getServerSession(authOptions);
+  if (session?.user?.id) {
+    userId = session.user.id;
   }
-  const mailTitle = fillTemplate(template.zh_title || '', lead, contact);
-  const mailHtml = fillTemplate(template.zh_html_content || '', lead, contact);
-  const mailText = fillTemplate(template.zh_text_content || '', lead, contact);
+  if (!userId && lead.createdBy) userId = lead.createdBy;
+  if (!userId && lead.assigned_to) userId = lead.assigned_to;
+  if (!userId) {
+    return NextResponse.json({ error: '未找到发件人用户' }, { status: 400 });
+  }
+  const autoMailer = await prismadb.auto_mailer_configs.findFirst({
+    where: { user: userId },
+  });
+  if (!autoMailer) {
+    return NextResponse.json({ error: '未找到发件人配置' }, { status: 400 });
+  }
+  // 组装变量并填充模板
+  const vars = getMailVars(contact, autoMailer);
+  const mailTitle = fillTemplate(template.zh_title || '', lead, vars, contact);
+  const mailHtml = fillTemplate(template.zh_html_content || '', lead, vars, contact);
+  const mailText = fillTemplate(template.zh_text_content || '', lead, vars, contact);
   // 插入 mail_queue
   await prismadb.mail_queue.create({
     data: {
       lead_id: lead.id,
       lead_contact_id: contact.id,
       step: 0,
-      from: setting.SENDCLOUD_FROM,
-      fromName: setting.SENDCLOUD_FROM_NAME,
+      from: autoMailer.mail_address || '',
+      fromName: autoMailer.mail_from_name_cn || '',
       to: contact.email,
       subject: mailTitle,
       html: mailHtml,

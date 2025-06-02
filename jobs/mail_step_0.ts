@@ -1,23 +1,14 @@
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-var-requires */
 // 发送初次邮件破冰(冷邮件)
-import cron from 'node-cron';
-const { PrismaClient } = require("@prisma/client");
+const cron = require('node-cron');
+const { PrismaClient } = require('@prisma/client');
 const setting = require('./setting.json');
+const { fillTemplate, getMailVars } = require('../lib/mailTemplate');
+const { getServerSession } = require('next-auth');
+const { authOptions } = require('../lib/auth');
 
 const prisma = new PrismaClient();
-
-// 占位符替换函数
-function fillTemplate(
-  template: string,
-  lead: Record<string, any>,
-  vars: Record<string, any> = {}
-): string {
-  if (!template) return '';
-  return template.replace(/\{\{(\w+)\}\}/g, (_: string, key: string) => {
-    if (vars[key] !== undefined) return vars[key];
-    if (lead[key] !== undefined) return lead[key];
-    return '';
-  });
-}
 
 async function processMailStep0() {
   // 1. 查询待处理的历史记录
@@ -38,6 +29,13 @@ async function processMailStep0() {
   });
   if (!template) return;
 
+  // 获取当前登录用户（如有）
+  let sessionUserId = undefined;
+  try {
+    const session = await getServerSession(authOptions);
+    if (session?.user?.id) sessionUserId = session.user.id;
+  } catch (e) {}
+
   for (const history of histories) {
     // 3. 读取对应Lead
     const lead = await prisma.crm_Leads.findUnique({
@@ -51,9 +49,9 @@ async function processMailStep0() {
     });
     if (!contact) continue;
 
-    // 5. 读取 Auto Mailer 配置
-    // 先查 lead.createdBy，再查 user 配置
-    let userId = lead.createdBy;
+    // 5. 读取 Auto Mailer 配置，优先顺序：session.user.id > lead.createdBy > lead.assigned_to
+    let userId = sessionUserId;
+    if (!userId && lead.createdBy) userId = lead.createdBy;
     if (!userId && lead.assigned_to) userId = lead.assigned_to;
     if (!userId) continue;
     const autoMailer = await prisma.auto_mailer_configs.findFirst({
@@ -62,16 +60,12 @@ async function processMailStep0() {
     if (!autoMailer) continue;
 
     // 6. 组装变量
-    const zh_vars = {
-      APPELLATION: contact.appellation || '',
-      SENDER: autoMailer.mail_from_name_cn || '',
-      MOBILE: autoMailer.contact_no || '',
-    };
+    const vars = getMailVars(contact, autoMailer);
 
     // 7. 填充模板
-    const mailTitle = fillTemplate(template.zh_title || '', lead, zh_vars);
-    const mailHtml = fillTemplate(template.zh_html_content || '', lead, zh_vars);
-    const mailText = fillTemplate(template.zh_text_content || '', lead, zh_vars);
+    const mailTitle = fillTemplate(template.zh_title || '', lead, vars, contact);
+    const mailHtml = fillTemplate(template.zh_html_content || '', lead, vars, contact);
+    const mailText = fillTemplate(template.zh_text_content || '', lead, vars, contact);
 
     // 8. 生成完整邮件内容并插入 mail_queue
     const from = autoMailer.mail_address;
@@ -120,3 +114,4 @@ if (require.main === module) {
     process.exit(0);
   });
 }
+ 

@@ -198,7 +198,7 @@ export function UpdateLeadForm({ initialData, setOpen }: NewTaskFormProps) {
                 <FormItem>
                   <FormLabel>联系人</FormLabel>
                   <div className="space-y-2">
-                    {field.value.map((contact, idx) => (
+                    {field.value.map((contact: any, idx: number) => (
                       <div key={idx} className="flex gap-2 items-center">
                         <Input
                           placeholder="姓名"
@@ -228,7 +228,7 @@ export function UpdateLeadForm({ initialData, setOpen }: NewTaskFormProps) {
                           }}
                         />
                         <Button type="button" variant="destructive" size="sm" onClick={() => {
-                          const newContacts = field.value.filter((_, i) => i !== idx);
+                          const newContacts = field.value.filter((_: any, i: number) => i !== idx);
                           field.onChange(newContacts);
                         }}>删除</Button>
                       </div>

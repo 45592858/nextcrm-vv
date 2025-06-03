@@ -30,7 +30,7 @@ FROM node:20-slim AS production
 ENV NODE_ENV production
 
 RUN addgroup --system nodejs && \
-    adduser --system --ingroup nodejs nextjs
+    adduser --system --ingroup nodejs --home /app nextjs
 
 RUN apt-get update -y && \
     apt-get install -y openssl libssl-dev 
@@ -57,3 +57,5 @@ EXPOSE 3000
 
 # Check if pnpm is installed
 RUN pnpm --version || echo "pnpm not found"
+
+ENV HOME=/app

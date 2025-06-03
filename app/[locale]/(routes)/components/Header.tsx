@@ -26,9 +26,9 @@ const Header = ({ id, name, email, avatar, lang }: Props) => {
         <div className="flex items-center gap-3">
           <CommandComponent />
           <SetLanguage userId={id} />
-          <Feedback />
+          {/* <Feedback /> */}
           <ThemeToggle />
-          <SupportComponent />
+          {/* <SupportComponent /> */}
           <AvatarDropdown
             avatar={avatar}
             userId={id}

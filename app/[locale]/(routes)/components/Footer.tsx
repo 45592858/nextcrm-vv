@@ -15,7 +15,7 @@ const Footer = async () => {
           </h1>
         </Link>
       </div>
-      <div className="hidden md:flex space-x-2 pr-2">
+      {/* <div className="hidden md:flex space-x-2 pr-2">
         powered by Next.js
         <span className="bg-black rounded-md text-white px-1 mx-1">
           {nextVersion.substring(1, 7) || process.env.NEXT_PUBLIC_NEXT_VERSION}
@@ -34,7 +34,7 @@ const Footer = async () => {
         <Link className="pl-1 font-bold" href="https://www.softbase.cz">
           SoftBase s.r.o.
         </Link>
-      </div>
+      </div> */}
     </footer>
   );
 };

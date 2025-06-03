@@ -57,7 +57,15 @@ export function NewLeadForm({ users, accounts }: NewTaskFormProps) {
     assigned_to: z.string().optional(),
     accountIDs: z.string().optional(),
     region: z.string().optional(),
-    contacts: z.string().optional(),
+    contacts: z.array(z.object({
+      name: z.string().min(1, { message: "姓名为必填项" }),
+      email: z.string().email({ message: "邮箱格式不正确" }).optional(),
+      phone: z.string().optional(),
+      title: z.string().optional(),
+      appellation: z.string().optional(),
+      others: z.string().optional(),
+      memo: z.string().optional(),
+    })).min(1, { message: "至少添加一个联系人" }),
     memo: z.string().optional(),
     industry: z.string().optional(),
     website: z.string().optional(),
@@ -78,7 +86,7 @@ export function NewLeadForm({ users, accounts }: NewTaskFormProps) {
     assigned_to: "",
     accountIDs: "",
     region: "",
-    contacts: "",
+    contacts: [{ name: "", email: "", phone: "" }],
     memo: "",
     industry: "",
     website: "",
@@ -110,24 +118,7 @@ export function NewLeadForm({ users, accounts }: NewTaskFormProps) {
       });
     } finally {
       setIsLoading(false);
-      form.reset({
-        company: "",
-        lead_source: "",
-        refered_by: "",
-        campaign: "",
-        assigned_to: "",
-        accountIDs: "",
-        region: "",
-        contacts: "",
-        memo: "",
-        industry: "",
-        website: "",
-        address: "",
-        company_type: "",
-        employee_scale: "",
-        introduction: "",
-        lead_source_content: "",
-      });
+      form.reset(defaultValues);
       router.refresh();
     }
   };
@@ -182,14 +173,45 @@ export function NewLeadForm({ users, accounts }: NewTaskFormProps) {
               name="contacts"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contacts (JSON)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      disabled={isLoading}
-                      placeholder='[{"name":"张三","phone":"123456"}]'
-                      {...field}
-                    />
-                  </FormControl>
+                  <FormLabel>联系人</FormLabel>
+                  <div className="space-y-2">
+                    {field.value.map((contact, idx) => (
+                      <div key={idx} className="flex gap-2 items-center">
+                        <Input
+                          placeholder="姓名"
+                          value={contact.name}
+                          onChange={e => {
+                            const newContacts = [...field.value];
+                            newContacts[idx].name = e.target.value;
+                            field.onChange(newContacts);
+                          }}
+                        />
+                        <Input
+                          placeholder="邮箱"
+                          value={contact.email || ""}
+                          onChange={e => {
+                            const newContacts = [...field.value];
+                            newContacts[idx].email = e.target.value;
+                            field.onChange(newContacts);
+                          }}
+                        />
+                        <Input
+                          placeholder="电话"
+                          value={contact.phone || ""}
+                          onChange={e => {
+                            const newContacts = [...field.value];
+                            newContacts[idx].phone = e.target.value;
+                            field.onChange(newContacts);
+                          }}
+                        />
+                        <Button type="button" variant="destructive" size="sm" onClick={() => {
+                          const newContacts = field.value.filter((_, i) => i !== idx);
+                          field.onChange(newContacts);
+                        }}>删除</Button>
+                      </div>
+                    ))}
+                    <Button type="button" size="sm" onClick={() => field.onChange([...field.value, { name: "", email: "", phone: "" }])}>添加联系人</Button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

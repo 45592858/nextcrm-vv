@@ -19,7 +19,7 @@ export const columns: ColumnDef<Lead>[] = [
       <DataTableColumnHeader column={column} title="Expected close" />
     ),
     cell: ({ row }) => (
-      <div className="w-[80px]">
+      <div className="w-[70px]">
         {moment(row.getValue("createdAt")).format("YY-MM-DD")}
       </div>
     ),
@@ -32,7 +32,7 @@ export const columns: ColumnDef<Lead>[] = [
       <DataTableColumnHeader column={column} title="Last update" />
     ),
     cell: ({ row }) => (
-      <div className="w-[80px]">
+      <div className="w-[70px]">
         {moment(row.getValue("updatedAt")).format("YY-MM-DD")}
       </div>
     ),
@@ -46,7 +46,7 @@ export const columns: ColumnDef<Lead>[] = [
     ),
 
     cell: ({ row }) => (
-      <div className="w-[150px]">
+      <div className="w-[80px]">
         {
           //@ts-ignore
           //TODO: fix this
@@ -103,18 +103,20 @@ export const columns: ColumnDef<Lead>[] = [
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <a
-                className="max-w-[200px] truncate cursor-pointer text-ellipsis whitespace-nowrap hover:underline"
-                href={`/${locale}/crm/leads/${row.original.id}/contact-history`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {summary || '-'}
-              </a>
+              <div className="w-[100px]">
+                <a
+                  className="truncate cursor-pointer text-ellipsis whitespace-nowrap hover:underline block"
+                  href={`/${locale}/crm/leads/${row.original.id}/contact-history`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {summary || '-'}
+                </a>
+              </div>
             </TooltipTrigger>
             <TooltipContent className="max-w-[600px] p-0">
               {Array.isArray(contacts) && contacts.length > 0 ? (
-                <table className="min-w-[520px] text-xs border-collapse">
+                <table className="min-w-[400px] text-xs border-collapse">
                   <thead>
                     <tr>
                       <th className="px-2 py-1 border-b font-semibold">姓名</th>
@@ -159,7 +161,7 @@ export const columns: ColumnDef<Lead>[] = [
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="max-w-[200px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
+              <div className="w-[100px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
             </TooltipTrigger>
             <TooltipContent className="max-w-[400px] whitespace-pre-line break-words">{value}</TooltipContent>
           </Tooltip>
@@ -181,7 +183,7 @@ export const columns: ColumnDef<Lead>[] = [
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="max-w-[200px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
+              <div className="w-[100px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
             </TooltipTrigger>
             <TooltipContent className="max-w-[400px] whitespace-pre-line break-words">{value}</TooltipContent>
           </Tooltip>
@@ -212,7 +214,7 @@ export const columns: ColumnDef<Lead>[] = [
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="max-w-[200px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
+              <div className="w-[100px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
             </TooltipTrigger>
             <TooltipContent className="max-w-[400px] whitespace-pre-line break-words">{value}</TooltipContent>
           </Tooltip>
@@ -252,7 +254,7 @@ export const columns: ColumnDef<Lead>[] = [
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="max-w-[200px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
+              <div className="w-[100px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
             </TooltipTrigger>
             <TooltipContent className="max-w-[400px] whitespace-pre-line break-words">{value}</TooltipContent>
           </Tooltip>
@@ -260,40 +262,40 @@ export const columns: ColumnDef<Lead>[] = [
       );
     },
   },
-  {
-    accessorKey: "lead_source_content",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Lead Source Content" />
-    ),
-    cell: ({ row }) => {
-      const value = row.getValue("lead_source_content") as string;
-      if (!value) return null;
-      let display = value;
-      try {
-        display = JSON.stringify(JSON.parse(value), null, 2);
-      } catch {}
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="max-w-[200px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-[600px] whitespace-pre-line break-words">
-              {display}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    },
-    enableSorting: false,
-    enableHiding: true,
-    filterFn: (row, id, value) => {
-      const content = row.getValue(id);
-      if (!value) return true;
-      if (!content) return false;
-      return String(content).toLowerCase().includes(String(value).toLowerCase());
-    },
-  },
+  // {
+  //   accessorKey: "lead_source_content",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Lead Source Content" />
+  //   ),
+  //   cell: ({ row }) => {
+  //     const value = row.getValue("lead_source_content") as string;
+  //     if (!value) return null;
+  //     let display = value;
+  //     try {
+  //       display = JSON.stringify(JSON.parse(value), null, 2);
+  //     } catch {}
+  //     return (
+  //       <TooltipProvider>
+  //         <Tooltip>
+  //           <TooltipTrigger asChild>
+  //             <div className="w-[100px] truncate cursor-pointer text-ellipsis whitespace-nowrap">{value}</div>
+  //           </TooltipTrigger>
+  //           <TooltipContent className="max-w-[600px] whitespace-pre-line break-words">
+  //             {display}
+  //           </TooltipContent>
+  //         </Tooltip>
+  //       </TooltipProvider>
+  //     );
+  //   },
+  //   enableSorting: false,
+  //   enableHiding: true,
+  //   filterFn: (row, id, value) => {
+  //     const content = row.getValue(id);
+  //     if (!value) return true;
+  //     if (!content) return false;
+  //     return String(content).toLowerCase().includes(String(value).toLowerCase());
+  //   },
+  // },
   {
     accessorKey: "status",
     header: ({ column }) => (

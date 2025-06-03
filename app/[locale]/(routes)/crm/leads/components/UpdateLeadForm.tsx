@@ -68,7 +68,15 @@ export function UpdateLeadForm({ initialData, setOpen }: NewTaskFormProps) {
     type: z.string().optional(),
     accountIDs: z.string().optional(),
     region: z.string().optional().nullable(),
-    contacts: z.string().optional().nullable(),
+    contacts: z.array(z.object({
+      name: z.string().min(1, { message: "姓名为必填项" }),
+      email: z.string().email({ message: "邮箱格式不正确" }).optional(),
+      phone: z.string().optional(),
+      title: z.string().optional(),
+      appellation: z.string().optional(),
+      others: z.string().optional(),
+      memo: z.string().optional(),
+    })).min(1, { message: "至少添加一个联系人" }),
     memo: z.string().optional().nullable(),
     industry: z.string().optional().nullable(),
     website: z.string().optional().nullable(),
@@ -86,7 +94,9 @@ export function UpdateLeadForm({ initialData, setOpen }: NewTaskFormProps) {
     if (!obj || typeof obj !== "object") return obj;
     const newObj: any = {};
     for (const key in obj) {
-      if (obj[key] === null) newObj[key] = "";
+      if (key === "contacts" && Array.isArray(obj[key])) {
+        newObj[key] = obj[key].map((c: any) => ({ ...c, name: c.name || "", email: c.email || "", phone: c.phone || "" }));
+      } else if (obj[key] === null) newObj[key] = "";
       else newObj[key] = obj[key];
     }
     return newObj;
@@ -100,7 +110,9 @@ export function UpdateLeadForm({ initialData, setOpen }: NewTaskFormProps) {
   const onSubmit = async (data: NewLeadFormValues) => {
     setIsLoading(true);
     try {
-      await axios.put("/api/crm/leads", data);
+      // 只提交主表字段，不提交 contacts
+      const { contacts, ...mainData } = data;
+      await axios.put("/api/crm/leads", mainData);
       toast({
         title: "Success",
         description: "Lead updated successfully",
@@ -184,14 +196,45 @@ export function UpdateLeadForm({ initialData, setOpen }: NewTaskFormProps) {
               name="contacts"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contacts (JSON)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      disabled={isLoading}
-                      placeholder='[{"name":"张三","phone":"123456"}]'
-                      {...field}
-                    />
-                  </FormControl>
+                  <FormLabel>联系人</FormLabel>
+                  <div className="space-y-2">
+                    {field.value.map((contact, idx) => (
+                      <div key={idx} className="flex gap-2 items-center">
+                        <Input
+                          placeholder="姓名"
+                          value={contact.name}
+                          onChange={e => {
+                            const newContacts = [...field.value];
+                            newContacts[idx].name = e.target.value;
+                            field.onChange(newContacts);
+                          }}
+                        />
+                        <Input
+                          placeholder="邮箱"
+                          value={contact.email || ""}
+                          onChange={e => {
+                            const newContacts = [...field.value];
+                            newContacts[idx].email = e.target.value;
+                            field.onChange(newContacts);
+                          }}
+                        />
+                        <Input
+                          placeholder="电话"
+                          value={contact.phone || ""}
+                          onChange={e => {
+                            const newContacts = [...field.value];
+                            newContacts[idx].phone = e.target.value;
+                            field.onChange(newContacts);
+                          }}
+                        />
+                        <Button type="button" variant="destructive" size="sm" onClick={() => {
+                          const newContacts = field.value.filter((_, i) => i !== idx);
+                          field.onChange(newContacts);
+                        }}>删除</Button>
+                      </div>
+                    ))}
+                    <Button type="button" size="sm" onClick={() => field.onChange([...field.value, { name: "", email: "", phone: "" }])}>添加联系人</Button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

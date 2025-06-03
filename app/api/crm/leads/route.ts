@@ -18,6 +18,8 @@ export async function POST(req: Request) {
       return new NextResponse("No form data", { status: 400 });
     }
 
+    const { contacts, ...leadData } = body;
+
     const {
       company,
       lead_source,
@@ -26,7 +28,6 @@ export async function POST(req: Request) {
       assigned_to,
       accountIDs,
       region,
-      contacts,
       memo,
       industry,
       website,
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
       employee_scale,
       introduction,
       lead_source_content,
-    } = body;
+    } = leadData;
 
     //console.log(req.body, "req.body");
 
@@ -44,24 +45,24 @@ export async function POST(req: Request) {
         v: 1,
         createdBy: userId,
         updatedBy: userId,
-        company,
-        lead_source,
-        refered_by,
-        campaign,
+        company: company,
+        lead_source: lead_source,
+        refered_by: refered_by,
+        campaign: campaign,
         assigned_to: assigned_to || userId,
         accountsIDs: accountIDs && accountIDs !== "" ? accountIDs : undefined,
         status: "NEW",
         type: "DEMO",
-        region,
-        contacts,
-        memo,
-        industry,
-        website,
-        address,
-        company_type,
-        employee_scale,
-        introduction,
-        lead_source_content,
+        region: region,
+        memo: memo,
+        industry: industry,
+        website: website,
+        address: address,
+        company_type: company_type,
+        employee_scale: employee_scale,
+        introduction: introduction,
+        lead_source_content: lead_source_content,
+        contacts: contacts && Array.isArray(contacts) && contacts.length > 0 ? { create: contacts } : undefined,
       },
     });
 
@@ -111,8 +112,9 @@ export async function PUT(req: Request) {
       return new NextResponse("No form data", { status: 400 });
     }
 
+    const { contacts: updateContacts, id, ...updateData } = body;
+
     const {
-      id,
       company,
       lead_source,
       refered_by,
@@ -122,7 +124,6 @@ export async function PUT(req: Request) {
       status,
       type,
       region,
-      contacts,
       memo,
       industry,
       website,
@@ -131,33 +132,31 @@ export async function PUT(req: Request) {
       employee_scale,
       introduction,
       lead_source_content,
-    } = body;
+    } = updateData;
 
     const updatedLead = await prismadb.crm_Leads.update({
-      where: {
-        id,
-      },
+      where: { id },
       data: {
         v: 1,
         updatedBy: userId,
-        company,
-        lead_source,
-        refered_by,
-        campaign,
+        company: company,
+        lead_source: lead_source,
+        refered_by: refered_by,
+        campaign: campaign,
         assigned_to: assigned_to || userId,
         accountsIDs: accountIDs && accountIDs !== "" ? accountIDs : undefined,
-        status,
-        type,
-        region,
-        contacts,
-        memo,
-        industry,
-        website,
-        address,
-        company_type,
-        employee_scale,
-        introduction,
-        lead_source_content,
+        status: status,
+        type: type,
+        region: region,
+        memo: memo,
+        industry: industry,
+        website: website,
+        address: address,
+        company_type: company_type,
+        employee_scale: employee_scale,
+        introduction: introduction,
+        lead_source_content: lead_source_content,
+        contacts: undefined, // 暂不支持直接批量更新联系人
       },
     });
 

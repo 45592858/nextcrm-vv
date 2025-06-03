@@ -73,7 +73,7 @@ async function processMailQueue() {
     // 日志：发送后
     await prisma.mail_log.create({
       data: {
-        type: 'send',
+        type: 'sent',
         queue_id: mail.id,
         mail_id: result && result.emailId ? result.emailId : null,
         payload: JSON.stringify({ to, subject, html, plain, from, fromName }),

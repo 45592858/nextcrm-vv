@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-var-requires */
 //import { PrismaClient } from "@prisma/client";
 const { PrismaClient } = require("@prisma/client");
 /*

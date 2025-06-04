@@ -41,6 +41,7 @@ COPY --from=build_image --chown=nextjs:nodejs /app/package.json ./
 COPY --from=build_image --chown=nextjs:nodejs /app/pnpm-lock.yaml ./
 COPY --from=build_image --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=build_image --chown=nextjs:nodejs /app/public ./public
+COPY --from=build_image --chown=nextjs:nodejs /app/jobs ./jobs
 COPY --from=build_image --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=build_image --chown=nextjs:nodejs /app/.env ./.env
 COPY --from=build_image --chown=nextjs:nodejs /app/.env.local ./.env.local

@@ -29,6 +29,33 @@ export default function LeadContacts({ leadId }: { leadId: string }) {
   // 检查该联系人邮箱是否已发过冷邮件
   const checkAndSendMail = async (contact: any) => {
     if (!contact.email) return;
+    // 0. 如果称呼为空，要求输入
+    if (!contact.appellation) {
+      const appellation = window.prompt('请输入该联系人的称呼（如：张总、王经理等）：');
+      if (!appellation) {
+        toast({
+          variant: 'destructive',
+          title: '请先输入称呼',
+        });
+        return;
+      }
+      // 保存称呼
+      const updateRes = await fetch(`/api/crm/leads/${leadId}/contacts/${contact.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appellation })
+      });
+      if (!updateRes.ok) {
+        toast({
+          variant: 'destructive',
+          title: '称呼保存失败',
+        });
+        return;
+      }
+      // 更新本地 contacts 状态
+      setContacts(prev => prev.map(c => c.id === contact.id ? { ...c, appellation } : c));
+      contact.appellation = appellation;
+    }
     // 1. 检查是否已发过冷邮件
     const checkRes = await fetch(`/api/crm/mail-queue/check?leadId=${leadId}&contactId=${contact.id}`);
     const checkData = await checkRes.json();

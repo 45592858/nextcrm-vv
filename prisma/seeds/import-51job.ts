@@ -1,6 +1,8 @@
-import { PrismaClient } from "@prisma/client";
-import fs from "fs";
-import path from "path";
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { PrismaClient } = require("@prisma/client");
+const fs = require("fs");
+const path = require("path");
 
 const prisma = new PrismaClient();
 

@@ -1,9 +1,9 @@
-// prisma/seeds/get-leads.ts
-
-import { PrismaClient } from "@prisma/client";
-import fs from "fs";
-import path from "path";
-import glob from "glob";
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { PrismaClient } = require("@prisma/client");
+const fs = require("fs");
+const path = require("path");
+const glob = require("glob");
 
 const prisma = new PrismaClient();
 

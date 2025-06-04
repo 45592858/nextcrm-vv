@@ -35,6 +35,8 @@ COPY --from=build_image --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=build_image --chown=nextjs:nodejs /app/.env ./.env
 COPY --from=build_image --chown=nextjs:nodejs /app/.env.local ./.env.local
 
+RUN mkdir -p /app/.local && chown -R nextjs:nodejs /app
+
 USER nextjs
 EXPOSE 3000
 ENV HOME=/app

@@ -4,7 +4,10 @@
 4）启动服务：docker compose up -d
 
 
-注：首次安装，请设置好 .env & .env.local
+注：
+1）首次安装，请设置好 .env & .env.local
+2）首次构建基础镜像：docker build -f Dockerfile.base -t nextcrm-base:20 .
+3）每次发布重新构建应用镜像： docker build -t nextcrm-vv:latest . （ == docker compose build）
 
 Git代理配置：
   临时代理设置：

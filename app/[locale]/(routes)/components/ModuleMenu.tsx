@@ -64,6 +64,7 @@ const ModuleMenu = ({ modules, dict, build }: Props) => {
           {/* 直接平铺 CRM 相关菜单 */}
           <div className="flex flex-col gap-2">
             <button className="text-center text-left w-full hover:bg-slate-700 hover:text-gray-200 rounded-md p-2" onClick={() => router.push("/crm/leads")}>{dict.ModuleMenu.crm.leads}</button>
+            <button className="text-center text-left w-full hover:bg-slate-700 hover:text-gray-200 rounded-md p-2" onClick={() => router.push("/crm/lead-contacts")}>{dict.ModuleMenu.crm.leadContacts}</button>
             <button className="text-center text-left w-full hover:bg-slate-700 hover:text-gray-200 rounded-md p-2" onClick={() => router.push("/crm/contact-histories")}>跟进记录</button>
             <button className="text-center text-left w-full hover:bg-slate-700 hover:text-gray-200 rounded-md p-2" onClick={() => router.push("/crm/opportunities")}>{dict.ModuleMenu.crm.opportunities}</button>
             <button className="text-center text-left w-full hover:bg-slate-700 hover:text-gray-200 rounded-md p-2" onClick={() => router.push("/crm/accounts")}>{dict.ModuleMenu.crm.accounts}</button>

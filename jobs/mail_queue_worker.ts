@@ -5,7 +5,6 @@ const cron = require('node-cron');
 const { PrismaClient } = require('@prisma/client');
 const axios = require('axios');
 require('dotenv').config();
-const setting = require('./setting.json');
 
 const prisma = new PrismaClient();
 
@@ -19,8 +18,8 @@ interface SendMailParams {
 }
 
 async function sendMailBySendCloud({ to, subject, html, plain, from, fromName }: SendMailParams) {
-  const apiUser = setting.SENDCLOUD_API_USER;
-  const apiKey = setting.SENDCLOUD_API_KEY;
+  const apiUser = process.env.SENDCLOUD_API_USER;
+  const apiKey = process.env.SENDCLOUD_API_KEY;
   const url = 'https://api.sendcloud.net/apiv2/mail/send';
   const params = new URLSearchParams();
   params.append('apiUser', apiUser || '');

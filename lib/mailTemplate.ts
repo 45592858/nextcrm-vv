@@ -1,5 +1,3 @@
-import setting from '@/jobs/setting.json';
-
 export interface MailVars {
   [key: string]: string;
 }

@@ -8,7 +8,7 @@ import { NewMailTemplateForm } from "./NewMailTemplateForm";
 import { MailTemplateDataTable } from "../table-components/data-table";
 import { useRouter } from "next/navigation";
 
-const MailTemplatesView = ({ data }: any) => {
+const MailTemplatesView = ({ data, subtitle }: any) => {
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   useEffect(() => { setIsMounted(true); }, []);
@@ -16,9 +16,12 @@ const MailTemplatesView = ({ data }: any) => {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <div className="flex justify-between">
-          <div>
+        <div className="flex justify-between items-end mb-2">
+          <div className="flex items-end space-x-4">
             <CardTitle className="cursor-pointer">邮件模板</CardTitle>
+            {subtitle && (
+              <span className="text-muted-foreground text-sm font-normal ml-2 whitespace-nowrap pb-[2px]">{subtitle}</span>
+            )}
           </div>
           <div className="flex space-x-2">
             <RightViewModal label={"+"} title="新建邮件模板" description="">

@@ -26,10 +26,12 @@ const OpportunitiesView = ({
   data,
   crmData,
   accountId,
+  subtitle,
 }: {
   data: any;
   crmData: any;
   accountId?: string;
+  subtitle?: string;
 }) => {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
@@ -52,15 +54,17 @@ const OpportunitiesView = ({
   return (
     <Card>
       <CardHeader className="pb-3">
-        <div className="flex justify-between">
-          <div>
+        <div className="flex justify-between items-end mb-2">
+          <div className="flex items-end space-x-4">
             <CardTitle
               onClick={() => router.push("/crm/opportunities")}
               className="cursor-pointer"
             >
               Opportunities
             </CardTitle>
-            <CardDescription></CardDescription>
+            {subtitle && (
+              <span className="text-muted-foreground text-sm font-normal ml-2 whitespace-nowrap pb-[2px]">{subtitle}</span>
+            )}
           </div>
           <div className="flex space-x-2">
             <Sheet open={open} onOpenChange={() => setOpen(false)}>

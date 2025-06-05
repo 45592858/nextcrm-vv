@@ -9,12 +9,9 @@ const LeadContactsPage = async () => {
   const crmData = await getAllCrmData();
   const leadContacts = await getLeadContacts();
   return (
-    <Container
-      title="Lead Contacts"
-      description={"所有线索联系人一览，可批量管理和操作"}
-    >
+    <Container>
       <Suspense fallback={<SuspenseLoading />}>
-        <LeadContactsView crmData={crmData} data={leadContacts} />
+        <LeadContactsView crmData={crmData} data={leadContacts} subtitle="所有线索联系人一览，可批量管理和操作" />
       </Suspense>
     </Container>
   );

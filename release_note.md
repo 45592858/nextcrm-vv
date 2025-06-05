@@ -7,7 +7,12 @@
 注：
 1）首次安装，请设置好 .env & .env.local
 2）首次构建基础镜像：docker build -f Dockerfile.base -t nextcrm-base:20 .
-3）如要运行 Jobs，参考命令：node jobs/mail_queue_worker.js
+3）如要运行 Jobs，参考命令：docker exec -it nextcrm-vv node jobs/mail_queue_worker.js
+
+4）命令参考：
+  docker compose build && docker compose up -d && docker compose logs -f nextcrm-vv
+  docker compose build --no-cache && docker compose up -d && docker compose logs -f nextcrm-vv
+
 
 Git代理配置：
   临时代理设置：

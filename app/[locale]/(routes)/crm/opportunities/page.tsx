@@ -12,12 +12,9 @@ const AccountsPage = async () => {
   const opportunities = await getOpportunitiesFull();
 
   return (
-    <Container
-      title="Opportunities"
-      description={"Everything you need to know about your opportinities"}
-    >
+    <Container>
       <Suspense fallback={<SuspenseLoading />}>
-        <OpportunitiesView crmData={crmData} data={opportunities} />
+        <OpportunitiesView crmData={crmData} data={opportunities} subtitle="Everything you need to know about your opportinities" />
       </Suspense>
     </Container>
   );

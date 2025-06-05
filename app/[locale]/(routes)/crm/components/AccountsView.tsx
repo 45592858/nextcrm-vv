@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
-const AccountsView = ({ data, crmData }: any) => {
+const AccountsView = ({ data, crmData, subtitle }: any) => {
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
@@ -42,15 +42,17 @@ const AccountsView = ({ data, crmData }: any) => {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <div className="flex justify-between">
-          <div>
+        <div className="flex justify-between items-end mb-2">
+          <div className="flex items-end space-x-4">
             <CardTitle
               onClick={() => router.push("/crm/accounts")}
               className="cursor-pointer"
             >
               Accounts
             </CardTitle>
-            <CardDescription></CardDescription>
+            {subtitle && (
+              <span className="text-muted-foreground text-sm font-normal ml-2 whitespace-nowrap pb-[2px]">{subtitle}</span>
+            )}
           </div>
           <div className="flex space-x-2">
             <Sheet open={open} onOpenChange={() => setOpen(false)}>

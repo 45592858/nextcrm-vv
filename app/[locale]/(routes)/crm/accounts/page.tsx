@@ -11,12 +11,9 @@ const AccountsPage = async () => {
   const accounts = await getAccounts();
 
   return (
-    <Container
-      title="Accounts"
-      description={"Everything you need to know about your accounts"}
-    >
+    <Container>
       <Suspense fallback={<SuspenseLoading />}>
-        <AccountsView crmData={crmData} data={accounts} />
+        <AccountsView crmData={crmData} data={accounts} subtitle="Everything you need to know about your accounts" />
       </Suspense>
     </Container>
   );

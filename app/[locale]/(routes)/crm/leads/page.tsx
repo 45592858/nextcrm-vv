@@ -14,12 +14,9 @@ const LeadsPage = async () => {
 
   console.log(leads[0], "leads");
   return (
-    <Container
-      title="Leads"
-      description={"Everything you need to know about your leads"}
-    >
+    <Container>
       <Suspense fallback={<SuspenseLoading />}>
-        <LeadsView crmData={crmData} data={leads} />
+        <LeadsView crmData={crmData} data={leads} subtitle="Everything you need to know about your leads" />
       </Suspense>
     </Container>
   );

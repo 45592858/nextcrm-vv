@@ -3,8 +3,8 @@ import { Separator } from "@/components/ui/separator";
 import React from "react";
 
 interface ContainerProps {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   visibility?: string;
   children: React.ReactNode;
 }

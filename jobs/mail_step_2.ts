@@ -41,7 +41,7 @@ async function processMailStep2() {
     if (!userId) continue;
     const autoMailer = await prisma.auto_mailer_configs.findFirst({ where: { user: userId } });
     if (!autoMailer) continue;
-    const vars = getMailVars(contact, autoMailer);
+    const vars = getMailVars(contact, autoMailer, lead.language);
     const mailTitle = fillTemplate(template.zh_title || '', lead, vars, contact);
     const mailHtml = fillTemplate(template.zh_html_content || '', lead, vars, contact);
     const mailText = fillTemplate(template.zh_text_content || '', lead, vars, contact);

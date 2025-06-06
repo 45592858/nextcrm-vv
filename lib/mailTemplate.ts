@@ -24,10 +24,10 @@ export function fillTemplate(
 /**
  * 自动组装常用变量（SENDER/MOBILE 来源于 autoMailer）
  */
-export function getMailVars(contact: any, autoMailer: any) {
+export function getMailVars(contact: any, autoMailer: any, language?: string) {
   return {
     APPELLATION: contact?.appellation || '',
-    SENDER: autoMailer?.mail_from_name_cn || '',
+    SENDER: language === 'en' ? (autoMailer?.mail_from_name_en || '') : (autoMailer?.mail_from_name_cn || ''),
     MOBILE: autoMailer?.contact_no || '',
   };
 } 

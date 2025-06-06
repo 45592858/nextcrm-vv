@@ -58,10 +58,19 @@ export async function POST(req: Request, { params }: { params: Promise<{ leadId:
     return NextResponse.json({ error: '未找到发件人配置' }, { status: 400 });
   }
   // 组装变量并填充模板
-  const vars = getMailVars(contact, autoMailer);
-  const mailTitle = fillTemplate(template.zh_title || '', lead, vars, contact);
-  const mailHtml = fillTemplate(template.zh_html_content || '', lead, vars, contact);
-  const mailText = fillTemplate(template.zh_text_content || '', lead, vars, contact);
+  const vars = getMailVars(contact, autoMailer, lead.language ?? undefined);
+  let mailTitle, mailHtml, mailText, fromName;
+  if (lead.language === 'en') {
+    mailTitle = fillTemplate(template.en_title || '', lead, vars, contact);
+    mailHtml = fillTemplate(template.en_html_content || '', lead, vars, contact);
+    mailText = fillTemplate(template.en_text_content || '', lead, vars, contact);
+    fromName = autoMailer.mail_from_name_en;
+  } else {
+    mailTitle = fillTemplate(template.zh_title || '', lead, vars, contact);
+    mailHtml = fillTemplate(template.zh_html_content || '', lead, vars, contact);
+    mailText = fillTemplate(template.zh_text_content || '', lead, vars, contact);
+    fromName = autoMailer.mail_from_name_cn;
+  }
   // 插入 mail_queue
   await prismadb.mail_queue.create({
     data: {
@@ -69,7 +78,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ leadId:
       lead_contact_id: contact.id,
       step: 0,
       from: autoMailer.mail_address || '',
-      fromName: autoMailer.mail_from_name_cn || '',
+      fromName: fromName || '',
       to: contact.email,
       subject: mailTitle,
       html: mailHtml,

@@ -60,16 +60,24 @@ async function processMailStep0() {
     if (!autoMailer) continue;
 
     // 6. 组装变量
-    const vars = getMailVars(contact, autoMailer);
+    const vars = getMailVars(contact, autoMailer, lead.language);
 
-    // 7. 填充模板
-    const mailTitle = fillTemplate(template.zh_title || '', lead, vars, contact);
-    const mailHtml = fillTemplate(template.zh_html_content || '', lead, vars, contact);
-    const mailText = fillTemplate(template.zh_text_content || '', lead, vars, contact);
+    // 7. 根据lead.language选择模板和发件人名称
+    let mailTitle, mailHtml, mailText, fromName;
+    if (lead.language === 'en') {
+      mailTitle = fillTemplate(template.en_title || '', lead, vars, contact);
+      mailHtml = fillTemplate(template.en_html_content || '', lead, vars, contact);
+      mailText = fillTemplate(template.en_text_content || '', lead, vars, contact);
+      fromName = autoMailer.mail_from_name_en;
+    } else {
+      mailTitle = fillTemplate(template.zh_title || '', lead, vars, contact);
+      mailHtml = fillTemplate(template.zh_html_content || '', lead, vars, contact);
+      mailText = fillTemplate(template.zh_text_content || '', lead, vars, contact);
+      fromName = autoMailer.mail_from_name_cn;
+    }
 
     // 8. 生成完整邮件内容并插入 mail_queue
     const from = autoMailer.mail_address;
-    const fromName = autoMailer.mail_from_name_cn;
     const to = contact.email;
     if (!to) {
        console.log(`[mail_step_0] 无效的邮箱地址: ${to}, lead_id: ${history.lead_id}, contact_id: ${contact.id}`);

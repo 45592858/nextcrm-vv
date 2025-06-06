@@ -85,6 +85,7 @@ model crm_Leads {
   employee_scale     String?       // 员工规模，如 50-100人、500-1000人等
   introduction       String?       // 公司简介/介绍
   lead_source_content String?      // 来源关键内容，如公司简介等（JSON）
+  language           String?       @default("cn")// 语言，如 cn/en
   contact_histories  crm_Lead_Contact_Histories[]
   contacts           crm_Lead_Contacts[]
 }

@@ -32,7 +32,7 @@ async function main() {
     if (parts.length < 3) continue;
     const company = parts[0];
     const contactName = parts[1] === "N/A" ? undefined : parts[1];
-    const contactAppellation = parts[1] === "N/A" ? "SIR / MADAM" : undefined;
+    const contactAppellation = parts[1] === "N/A" ? "SIR / MADAM" : parts[1];
     const contactEmail = parts[2];
     if (!company || !contactEmail) continue;
     if (existCompanies.has(company)) {

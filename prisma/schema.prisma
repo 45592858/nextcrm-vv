@@ -138,9 +138,8 @@ model crm_Lead_Contact_Histories {
   updated_at      DateTime @updatedAt @db.Date
   // 针对自动邮件跟进
   sequence_step   Int?      // 整数 // 1=线索创建 → 自动三封冷邮件 (跟进序列（3 + 1 法则）)
-  sequence_status String?   // open/replied/unsub/no-response
-  send_status     String?   // pending/sent/failed(invalid/blocked/spam/etc.)
-  last_email_at   DateTime? @db.Date
+  send_status     String?   // pending/sent/failed(invalid/blocked/spam/etc.) （open/replied/unsub/no-response）
+  send_email_at   DateTime? @db.Date
   queue_id        String?   @db.ObjectId // 关联 mail_queue.id
   // 关系
   lead            crm_Leads   @relation(fields: [lead_id], references: [id])

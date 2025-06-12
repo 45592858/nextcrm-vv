@@ -65,20 +65,14 @@ export async function POST(req: Request) {
     try {
       // 查找 mail_queue
       const mail = mailId ? await prismadb.mail_queue.findFirst({ where: { mail_id: mailId } }) : null;
-      // 写入 crm_Lead_Contact_Histories（类型为 reply，带 queue_id）
+      // 只更新原有 crm_Lead_Contact_Histories 记录
       if (mail) {
-        await prismadb.crm_Lead_Contact_Histories.create({
+        await prismadb.crm_Lead_Contact_Histories.updateMany({
+          where: { queue_id: mail.id },
           data: {
-            lead_id: mail.lead_id,
-            lead_contact_id: mail.lead_contact_id,
-            contact_time: timestamp ? new Date(Number(timestamp)) : new Date(),
-            contact_method: 'email',
-            contact_value: from || '',
-            contact_result: 'reply',
+            contact_result: '收到回复',
             memo: textContent || htmlContent || '',
-            sequence_step: mail.step,
             send_status: 'replied',
-            queue_id: mail.id,
           },
         });
         // 同步更新 mail_queue 状态

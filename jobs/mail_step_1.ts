@@ -74,9 +74,18 @@ async function processMailStep1() {
         status: 'pending',
       },
     });
-    await prisma.crm_Lead_Contact_Histories.update({
-      where: { id: history.id },
-      data: { send_status: 'queued', queue_id: queue.id },
+    await prisma.crm_Lead_Contact_Histories.create({
+      data: {
+        lead_id: history.lead_id,
+        lead_contact_id: history.lead_contact_id,
+        contact_time: new Date(),
+        contact_method: '邮件',
+        contact_value: contact.email,
+        sequence_step: 1,
+        send_status: 'pending',
+        send_email_at: new Date(),
+        queue_id: queue.id,
+      },
     });
   }
 }

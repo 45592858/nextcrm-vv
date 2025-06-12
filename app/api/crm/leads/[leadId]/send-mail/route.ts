@@ -72,7 +72,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ leadId:
     fromName = autoMailer.mail_from_name_cn;
   }
   // 插入 mail_queue
-  await prismadb.mail_queue.create({
+  const queue = await prismadb.mail_queue.create({
     data: {
       lead_id: lead.id,
       lead_contact_id: contact.id,
@@ -84,6 +84,20 @@ export async function POST(req: Request, { params }: { params: Promise<{ leadId:
       html: mailHtml,
       plain: mailText,
       status: 'pending',
+    },
+  });
+  // 插入新的 crm_Lead_Contact_Histories 记录
+  await prismadb.crm_Lead_Contact_Histories.create({
+    data: {
+      lead_id: lead.id,
+      lead_contact_id: contact.id,
+      contact_time: new Date(),
+      contact_method: '邮件',
+      contact_value: contact.email,
+      sequence_step: 0,
+      send_status: 'pending',
+      send_email_at: new Date(),
+      queue_id: queue.id,
     },
   });
   return NextResponse.json({ success: true });

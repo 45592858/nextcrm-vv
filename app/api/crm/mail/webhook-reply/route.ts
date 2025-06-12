@@ -1,3 +1,5 @@
+// SendCloud 回信/转信事件请统一通过 webhook-status 的 event=route 处理。
+// 本接口仅做兼容性保留，建议优先使用 /api/crm/mail/webhook-status。
 import { NextResponse } from 'next/server';
 import { prismadb } from '@/lib/prisma';
 

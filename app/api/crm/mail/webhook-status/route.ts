@@ -5,11 +5,20 @@ import { prismadb } from '@/lib/prisma';
 export async function POST(req: Request) {
   let text = '';
   let params;
+  // 1. 收到请求时先 type='log' 记录原始数据
   try {
     text = await req.text();
+    await prismadb.mail_log.create({
+      data: {
+        type: 'log',
+        queue_id: null,
+        mail_id: null,
+        payload: text,
+        result: 'raw',
+      },
+    });
     params = new URLSearchParams(text);
   } catch (err) {
-    // 记录解析失败
     try {
       await prismadb.mail_log.create({
         data: {
@@ -24,32 +33,97 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: '请求体不是有效的form-urlencoded' }, { status: 200 });
   }
 
-  // SendCloud 事件类型
+  // 2. 解析参数，按 event 类型分别 type=event 记录日志
   const event = params.get('event');
   const mailId = params.get('emailId');
   const message = params.get('message');
-  const status = event === 'deliver' ? 'sent'
-                : event === 'invalid' ? 'invalid'
-                : event === 'soft_bounce' ? 'soft_bounce'
-                : event === 'unsubscribe' ? 'unsubscribed'
-                : event === 'report_spam' ? 'spam'
-                : event === 'open' ? 'opened'
-                : event === 'click' ? 'clicked'
-                : event === 'route' ? 'replied'
-                : event || 'unknown';
-
+  // 记录事件日志
   try {
-    // 日志：收到请求
     await prismadb.mail_log.create({
       data: {
-        type: 'status',
+        type: event || 'unknown',
         queue_id: null,
         mail_id: mailId,
         payload: text,
         result: 'received',
       },
     });
+  } catch (e) {}
 
+  // 3. event=route 时，提取 route 相关参数，写入 crm_Lead_Contact_Histories
+  if (event === 'route') {
+    // 参考文档参数
+    const from = params.get('from');
+    const to = params.get('to');
+    const subject = params.get('subject');
+    const textContent = params.get('text');
+    const htmlContent = params.get('html');
+    const rawMessageUrl = params.get('raw_message_url');
+    const timestamp = params.get('timestamp');
+    const token = params.get('token');
+    // 记录 route 事件
+    try {
+      // 查找 mail_queue
+      const mail = mailId ? await prismadb.mail_queue.findFirst({ where: { mail_id: mailId } }) : null;
+      // 写入 crm_Lead_Contact_Histories（类型为 reply，带 queue_id）
+      if (mail) {
+        await prismadb.crm_Lead_Contact_Histories.create({
+          data: {
+            lead_id: mail.lead_id,
+            lead_contact_id: mail.lead_contact_id,
+            contact_time: timestamp ? new Date(Number(timestamp)) : new Date(),
+            contact_method: 'email',
+            contact_value: from || '',
+            contact_result: 'reply',
+            memo: textContent || htmlContent || '',
+            sequence_step: mail.step,
+            send_status: 'replied',
+            queue_id: mail.id,
+          },
+        });
+        // 同步更新 mail_queue 状态
+        await prismadb.mail_queue.update({
+          where: { id: mail.id },
+          data: { status: 'replied' },
+        });
+      }
+      await prismadb.mail_log.create({
+        data: {
+          type: 'route_result',
+          queue_id: mail?.id || null,
+          mail_id: mailId,
+          payload: text,
+          result: JSON.stringify({ from, to, subject, textContent, htmlContent, rawMessageUrl }),
+        },
+      });
+    } catch (err) {
+      try {
+        await prismadb.mail_log.create({
+          data: {
+            type: 'route_error',
+            queue_id: null,
+            mail_id: mailId || null,
+            payload: text,
+            result: (err instanceof Error ? err.message : String(err)).slice(0, 500),
+          },
+        });
+      } catch (e) {}
+      return NextResponse.json({ error: '服务器异常', detail: err instanceof Error ? err.message : String(err) }, { status: 200 });
+    }
+    return NextResponse.json({ success: true }, { status: 200 });
+  }
+
+  // 4. 其他事件按原有逻辑处理
+  const status = event === 'deliver' ? 'sent'
+    : event === 'invalid' ? 'invalid'
+    : event === 'soft_bounce' ? 'soft_bounce'
+    : event === 'unsubscribe' ? 'unsubscribed'
+    : event === 'report_spam' ? 'spam'
+    : event === 'open' ? 'opened'
+    : event === 'click' ? 'clicked'
+    : event || 'unknown';
+
+  try {
     if (!mailId) {
       await prismadb.mail_log.create({
         data: {
@@ -62,7 +136,6 @@ export async function POST(req: Request) {
       });
       return NextResponse.json({ error: 'Missing mailId' }, { status: 200 });
     }
-
     // 查找 queue
     const queue = await prismadb.mail_queue.findFirst({ where: { mail_id: mailId } });
     if (!queue) {
@@ -77,7 +150,6 @@ export async function POST(req: Request) {
       });
       return NextResponse.json({ error: '未找到队列记录' }, { status: 200 });
     }
-
     // 更新 mail_queue
     await prismadb.mail_queue.update({
       where: { id: queue.id },
@@ -88,7 +160,6 @@ export async function POST(req: Request) {
       where: { queue_id: queue.id },
       data: { send_status: status },
     });
-
     // 日志：处理结果
     await prismadb.mail_log.create({
       data: {
@@ -99,11 +170,8 @@ export async function POST(req: Request) {
         result: JSON.stringify({ status, message, event }),
       },
     });
-
-    // SendCloud 要求3秒内返回200
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (err) {
-    // 捕获所有异常，记录日志
     try {
       await prismadb.mail_log.create({
         data: {

@@ -33,3 +33,13 @@ https://free-proxy-list.net/
 
 验证代理是否能访问 github
 curl -x http://8.210.117.141:8888 https://github.com
+
+
+快速查找大文件（及目录，前20个）
+du -ah / | sort -rh | head -n 20
+
+删除所有未被使用的镜像，包括悬空镜像
+docker image prune -a
+
+删除所有停止的容器、所有未使用的镜像以及所有未使用的网络、所有构建缓存
+docker system prune -a

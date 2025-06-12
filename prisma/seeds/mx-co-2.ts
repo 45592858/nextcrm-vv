@@ -7,9 +7,14 @@ const path = require("path");
 const prisma = new PrismaClient();
 
 async function main() {
-  // 1. 读取文件
-  // const filePath = path.resolve(__dirname, "../../temp/墨西哥进口清关公司和报关行.txt");
-  const filePath = path.resolve(__dirname, "../../temp/拉美六国清关公司联系信息整合 - 的整合.txt");
+  // 1. 读取文件，文件路径从命令行参数获取
+  // 格式参考 temp/拉美六国清关公司联系信息整合 - 的整合.txt
+  const inputArg = process.argv[2];
+  if (!inputArg) {
+    console.error("请通过命令行参数指定输入文件路径，如: node mx-co-2.ts <filePath>");
+    process.exit(1);
+  }
+  const filePath = path.resolve(inputArg);
   if (!fs.existsSync(filePath)) {
     console.error(`文件不存在: ${filePath}`);
     process.exit(1);
@@ -21,8 +26,8 @@ async function main() {
     process.exit(1);
   }
 
-  // 2. 查出所有已存在的公司名称
-  const allLeads = await prisma.crm_Leads.findMany({ select: { company: true } });
+  // 2. 查出所有已存在的公司名称和id
+  const allLeads = await prisma.crm_Leads.findMany({ select: { id: true, company: true } });
   const existCompanies = new Set((allLeads as Array<{ company: string }>).map(l => l.company.trim()));
 
   let importCount = 0;
@@ -38,7 +43,25 @@ async function main() {
     const contactEmail = parts[3];
     if (!company || !contactEmail) continue;
     if (existCompanies.has(company)) {
-      console.log(`已存在: ${company}`);
+      // 公司已存在，检查联系人是否已存在
+      const existLead = allLeads.find(l => l.company.trim() === company);
+      if (existLead) {
+        const existContacts = await prisma.crm_Lead_Contacts.findMany({ where: { lead_id: existLead.id } });
+        const existEmails = new Set(existContacts.map(c => c.email?.trim()));
+        if (!existEmails.has(contactEmail)) {
+          await prisma.crm_Lead_Contacts.create({
+            data: {
+              lead_id: existLead.id,
+              name: contactName,
+              appellation: contactAppellation,
+              email: contactEmail,
+            },
+          });
+          console.log(`公司已存在，新增联系人: ${company} - ${contactEmail}`);
+        } else {
+          console.log(`公司和联系人都已存在: ${company} - ${contactEmail}`);
+        }
+      }
       continue;
     }
     // 新建lead

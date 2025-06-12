@@ -103,6 +103,7 @@ async function main() {
       },
     });
     existCompanies.add(company);
+    allLeads.push({ id: lead.id, company });
     importCount++;
     console.log(`已导入: ${company}`);
   }

@@ -63,6 +63,7 @@ async function main() {
     const contactName = (parts[2] === "" || parts[2] === "N/A")  ? undefined : parts[2];
     const contactAppellation = contactName === undefined ? "SIR / MADAM" : contactName;
     const contactEmail = parts[3];
+    const contactTitle = parts[4];
     if (!company || !contactEmail) continue;
     if (existCompanies.has(company)) {
       // 公司已存在，检查联系人是否已存在
@@ -77,6 +78,7 @@ async function main() {
               name: contactName,
               appellation: contactAppellation,
               email: contactEmail,
+              title: contactTitle,
             },
           });
           console.log(`公司已存在，新增联系人: ${company} - ${contactEmail}`);
@@ -102,9 +104,11 @@ async function main() {
         name: contactName,
         appellation: contactAppellation,
         email: contactEmail,
+        title: contactTitle,
       },
     });
     existCompanies.add(company);
+    allLeads.push({ id: lead.id, company });
     importCount++;
     console.log(`已导入: ${company}`);
   }

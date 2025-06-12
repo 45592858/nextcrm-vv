@@ -3,15 +3,36 @@
 const { PrismaClient } = require("@prisma/client");
 const fs = require("fs");
 const path = require("path");
+const iconv = require("iconv-lite");
+const readline = require("readline");
 
 const prisma = new PrismaClient();
 
+async function waitForConfirm() {
+  return new Promise((resolve) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    rl.question("请确保源文件格式为 Unix & UTF-8 no BOM，输入 Y 继续，否则退出: ", (answer) => {
+      rl.close();
+      resolve(answer.trim().toUpperCase() === 'Y');
+    });
+  });
+}
+
 async function main() {
-  // 1. 读取文件，文件路径从命令行参数获取
-  // 格式参考 temp/墨西哥进口清关公司和报关行.txt
+  // 导入前提示
+  const confirmed = await waitForConfirm();
+  if (!confirmed) {
+    console.log("已取消导入。");
+    process.exit(0);
+  }
+  // 1. 读取文件，文件路径从命令行参数获取，支持编码参数
   const inputArg = process.argv[2];
+  const encoding = process.argv[3] || 'utf-8';
   if (!inputArg) {
-    console.error("请通过命令行参数指定输入文件路径，如: node mx-co.ts <filePath>");
+    console.error("请通过命令行参数指定输入文件路径，如: node mx-co.ts <filePath> [encoding]");
     process.exit(1);
   }
   const filePath = path.resolve(inputArg);
@@ -19,7 +40,8 @@ async function main() {
     console.error(`文件不存在: ${filePath}`);
     process.exit(1);
   }
-  const raw = fs.readFileSync(filePath, "utf-8");
+  const buffer = fs.readFileSync(filePath);
+  const raw = iconv.decode(buffer, encoding);
   const lines = raw.split(/\r?\n/).filter(line => line.trim().length > 0);
   if (lines.length < 2) {
     console.error("文件内容不足");

@@ -4,7 +4,7 @@
 const cron = require('node-cron');
 const { PrismaClient } = require('@prisma/client');
 const setting = require('./setting.json');
-const { fillTemplate, getMailVars } = require('../lib/mailTemplate');
+const { fillTemplate, getMailVars, getSender } = require('../lib/mailTemplate');
 const { getServerSession } = require('next-auth');
 const { authOptions } = require('../lib/auth');
 
@@ -42,19 +42,20 @@ async function processMailStep3() {
     const autoMailer = await prisma.auto_mailer_configs.findFirst({ where: { user: userId } });
     if (!autoMailer) continue;
     const vars = getMailVars(contact, autoMailer, lead.language);
-    let mailTitle, mailHtml, mailText, fromName;
+    
+    // 使用 getSender 函数获取发件人信息
+    const { from, fromName } = getSender(autoMailer, lead.language);
+    
+    let mailTitle, mailHtml, mailText;
     if (lead.language === 'en') {
       mailTitle = fillTemplate(template.en_title || '', lead, vars, contact);
       mailHtml = fillTemplate(template.en_html_content || '', lead, vars, contact);
       mailText = fillTemplate(template.en_text_content || '', lead, vars, contact);
-      fromName = autoMailer.mail_from_name_en;
     } else {
       mailTitle = fillTemplate(template.zh_title || '', lead, vars, contact);
       mailHtml = fillTemplate(template.zh_html_content || '', lead, vars, contact);
       mailText = fillTemplate(template.zh_text_content || '', lead, vars, contact);
-      fromName = autoMailer.mail_from_name_cn;
     }
-    const from = autoMailer.mail_address;
     const to = contact.email;
     if (!to) {
       console.log(`[mail_step_3] 无效的邮箱地址: ${to}, lead_id: ${history.lead_id}, contact_id: ${contact.id}`);

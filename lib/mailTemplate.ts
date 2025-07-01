@@ -30,4 +30,32 @@ export function getMailVars(contact: any, autoMailer: any, language?: string) {
     SENDER: language === 'en' ? (autoMailer?.mail_from_name_en || '') : (autoMailer?.mail_from_name_cn || ''),
     MOBILE: autoMailer?.contact_no || '',
   };
+}
+
+/**
+ * 统一获取发件人信息
+ * @param autoMailer auto_mailer_configs 配置对象
+ * @param language 语言，用于选择对应的发件人名称
+ * @returns 发件人信息对象
+ */
+export function getSender(autoMailer: any, language?: string) {
+  if (!autoMailer) {
+    return {
+      senderName: '',
+      senderMobile: '',
+      from: '',
+      fromName: '',
+    };
+  }
+
+  const fromName = language === 'en' 
+    ? (autoMailer.mail_from_name_en || '') 
+    : (autoMailer.mail_from_name_cn || '');
+
+  return {
+    senderName: fromName,
+    senderMobile: autoMailer.contact_no || '',
+    from: autoMailer.mail_address || '',
+    fromName: fromName,
+  };
 } 

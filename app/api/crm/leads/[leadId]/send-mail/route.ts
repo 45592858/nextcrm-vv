@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prismadb } from '@/lib/prisma';
-import { fillTemplate, getMailVars } from '@/lib/mailTemplate';
+import { fillTemplate, getMailVars, getSender } from '@/lib/mailTemplate';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
@@ -59,17 +59,19 @@ export async function POST(req: Request, { params }: { params: Promise<{ leadId:
   }
   // 组装变量并填充模板
   const vars = getMailVars(contact, autoMailer, lead.language ?? undefined);
-  let mailTitle, mailHtml, mailText, fromName;
+  
+  // 使用 getSender 函数获取发件人信息
+  const { from, fromName } = getSender(autoMailer, lead.language || undefined);
+  
+  let mailTitle, mailHtml, mailText;
   if (lead.language === 'en') {
     mailTitle = fillTemplate(template.en_title || '', lead, vars, contact);
     mailHtml = fillTemplate(template.en_html_content || '', lead, vars, contact);
     mailText = fillTemplate(template.en_text_content || '', lead, vars, contact);
-    fromName = autoMailer.mail_from_name_en;
   } else {
     mailTitle = fillTemplate(template.zh_title || '', lead, vars, contact);
     mailHtml = fillTemplate(template.zh_html_content || '', lead, vars, contact);
     mailText = fillTemplate(template.zh_text_content || '', lead, vars, contact);
-    fromName = autoMailer.mail_from_name_cn;
   }
   // 插入 mail_queue
   const queue = await prismadb.mail_queue.create({
@@ -77,8 +79,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ leadId:
       lead_id: lead.id,
       lead_contact_id: contact.id,
       step: 0,
-      from: autoMailer.mail_address || '',
-      fromName: fromName || '',
+      from,
+      fromName,
       to: contact.email,
       subject: mailTitle,
       html: mailHtml,

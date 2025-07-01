@@ -4,7 +4,7 @@
 const cron = require('node-cron');
 const { PrismaClient } = require('@prisma/client');
 const setting = require('./setting.json');
-const { fillTemplate, getMailVars } = require('../lib/mailTemplate');
+const { fillTemplate, getMailVars, getSender } = require('../lib/mailTemplate');
 const { getServerSession } = require('next-auth');
 const { authOptions } = require('../lib/auth');
 
@@ -62,22 +62,22 @@ async function processMailStep0() {
     // 6. 组装变量
     const vars = getMailVars(contact, autoMailer, lead.language);
 
-    // 7. 根据lead.language选择模板和发件人名称
-    let mailTitle, mailHtml, mailText, fromName;
+    // 7. 使用 getSender 函数获取发件人信息
+    const { from, fromName } = getSender(autoMailer, lead.language);
+
+    // 8. 根据lead.language选择模板
+    let mailTitle, mailHtml, mailText;
     if (lead.language === 'en') {
       mailTitle = fillTemplate(template.en_title || '', lead, vars, contact);
       mailHtml = fillTemplate(template.en_html_content || '', lead, vars, contact);
       mailText = fillTemplate(template.en_text_content || '', lead, vars, contact);
-      fromName = autoMailer.mail_from_name_en;
     } else {
       mailTitle = fillTemplate(template.zh_title || '', lead, vars, contact);
       mailHtml = fillTemplate(template.zh_html_content || '', lead, vars, contact);
       mailText = fillTemplate(template.zh_text_content || '', lead, vars, contact);
-      fromName = autoMailer.mail_from_name_cn;
     }
 
-    // 8. 生成完整邮件内容并插入 mail_queue
-    const from = autoMailer.mail_address;
+    // 9. 生成完整邮件内容并插入 mail_queue
     const to = contact.email;
     if (!to) {
        console.log(`[mail_step_0] 无效的邮箱地址: ${to}, lead_id: ${history.lead_id}, contact_id: ${contact.id}`);

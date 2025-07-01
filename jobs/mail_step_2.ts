@@ -4,7 +4,7 @@
 const cron = require('node-cron');
 const { PrismaClient } = require('@prisma/client');
 const setting = require('./setting.json');
-const { fillTemplate, getMailVars } = require('../lib/mailTemplate');
+const { fillTemplate, getMailVars, getSender } = require('../lib/mailTemplate');
 const { getServerSession } = require('next-auth');
 const { authOptions } = require('../lib/auth');
 
@@ -42,11 +42,13 @@ async function processMailStep2() {
     const autoMailer = await prisma.auto_mailer_configs.findFirst({ where: { user: userId } });
     if (!autoMailer) continue;
     const vars = getMailVars(contact, autoMailer, lead.language);
+    
+    // 使用 getSender 函数获取发件人信息
+    const { from, fromName } = getSender(autoMailer, lead.language);
+    
     const mailTitle = fillTemplate(template.zh_title || '', lead, vars, contact);
     const mailHtml = fillTemplate(template.zh_html_content || '', lead, vars, contact);
     const mailText = fillTemplate(template.zh_text_content || '', lead, vars, contact);
-    const from = autoMailer.mail_address;
-    const fromName = autoMailer.mail_from_name_cn;
     const to = contact.email;
     if (!to) {
       console.log(`[mail_step_2] 无效的邮箱地址: ${to}, lead_id: ${history.lead_id}, contact_id: ${contact.id}`);

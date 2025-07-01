@@ -742,8 +742,8 @@ enum gptStatus {
 
 model mail_queue {
   id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  lead_id         String   @db.ObjectId
-  lead_contact_id String   @db.ObjectId
+  lead_id         String?  @db.ObjectId
+  lead_contact_id String?  @db.ObjectId
   step            Int
   from            String
   fromName        String
@@ -779,3 +779,27 @@ model auto_mailer_configs {
   contact_no        String
   assigned_user     Users? @relation(fields: [user], references: [id])
 }
+
+model crm_Lead_Mail_Only {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId // 主键
+  company            String   // 公司名称
+  state              String?  // 国家/省份/地区
+  products           String?  // 产品
+  email              String   // 邮箱
+  source             String   // 数据来源（如导入文件名）
+  language           String?  @default("cn")// 语言，如 cn/en
+  last_email_status  String?  // pending/sent/failed(invalid/blocked/spam/etc.)（open/replied/unsub/no-response）
+  last_email_at      DateTime? @db.Date // 邮件发送时间
+  created_at         DateTime @default(now()) @db.Date
+  updated_at         DateTime @updatedAt @db.Date
+}
+
+model shipping_Freight_Rate {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId // 主键
+  to_country   String   // 目的国家
+  price_text   String   // 运价文本
+  valid_until  DateTime // 有效期至
+  created_at   DateTime @default(now()) @db.Date
+  updated_at   DateTime @updatedAt @db.Date
+}
+

@@ -76,7 +76,7 @@ async function processMailStep9() {
       state: { in: ['印尼', '印度尼西亚', 'Indonesia'] },
       email: { not: '' },
     },
-    take: 10,
+    take: 100,
   });
   // 保险起见再过滤一次，兼容undefined/null/空字符串/业务规则
   const validCustomers = customers.filter(c => {

@@ -41,7 +41,7 @@ function formatRateTextToHtml(rateText) {
   return `<ul>\n${items}\n</ul>`;
 }
 
-async function processMailStep9() {
+async function processMailStep9(maxCustomers = 100) {
   // 1. 获取最新有效运价
   const today = new Date();
   const rate = await prisma.shipping_Freight_Rate.findFirst({
@@ -76,10 +76,9 @@ async function processMailStep9() {
       state: { in: ['印尼', '印度尼西亚', 'Indonesia'] },
       email: { not: '' },
     },
-    take: 100,
   });
   // 保险起见再过滤一次，兼容undefined/null/空字符串/业务规则
-  const validCustomers = customers.filter(c => {
+  const allValidCustomers = customers.filter(c => {
     // email 不为 null/空/全空格
     if (!c.email || c.email.trim() === '') return false;
     // last_email_at 为空/undefined 或 < startOfDay
@@ -88,6 +87,9 @@ async function processMailStep9() {
     if (c.last_email_status && !['sent', 'open', 'replied'].includes(c.last_email_status)) return false;
     return true;
   });
+  
+  // 限制处理数量，避免一次处理过多客户
+  const validCustomers = allValidCustomers.slice(0, maxCustomers);
 
   if (!validCustomers.length) {
     console.log('[mail_step_9] 无符合条件的客户，任务结束。');
@@ -167,7 +169,7 @@ async function processMailStep9() {
       },
     });
   }
-  console.log(`[mail_step_9] 本次任务处理了 ${validCustomers.length} 个客户`);
+  console.log(`[mail_step_9] 本次任务处理了 ${validCustomers.length} 个客户（总共找到 ${allValidCustomers.length} 个符合条件的客户，限制处理 ${maxCustomers} 个）`);
 }
 
 // 可按需保留或移除 cron 定时任务
@@ -175,7 +177,11 @@ async function processMailStep9() {
 // cron.schedule('*/15 * * * *', async () => { ... });
 
 if (require.main === module) {
-  processMailStep9().then(() => {
+  // 从命令行参数获取最大处理客户数，默认为100
+  const maxCustomers = parseInt(process.argv[2]) || 100;
+  console.log(`[mail_step_9] 开始执行，最大处理客户数：${maxCustomers}`);
+  
+  processMailStep9(maxCustomers).then(() => {
     console.log('[mail_step_9] 手动执行完成');
     process.exit(0);
   }).catch(e => {

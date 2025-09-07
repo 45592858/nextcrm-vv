@@ -50,14 +50,29 @@ async function sendMailBySendCloud({ to, subject, html, plain, from, fromName }:
   }
 }
 
-async function processMailQueue() {
+async function processMailQueue(batchSize: number = 20) {
+  console.log(`[INFO] 开始处理邮件队列，批量大小: ${batchSize}`);
+  
   const mails = await prisma.mail_queue.findMany({
     where: { status: 'pending' },
     orderBy: { created_at: 'asc' },
-    take: 20,
+    take: batchSize,
   });
+  
+  console.log(`[INFO] 找到 ${mails.length} 封待发送邮件`);
+  
+  if (mails.length === 0) {
+    console.log('[INFO] 没有待发送的邮件');
+    return;
+  }
+  
   for (const mail of mails) {
+    console.log(`\n[INFO] 处理邮件 ID: ${mail.id}`);
+    console.log(`[INFO] 收件人: ${mail.to}`);
+    console.log(`[INFO] 主题: ${mail.subject}`);
+    
     const { to, subject, html, plain, from, fromName } = mail;
+    
     // 日志：发送前
     await prisma.mail_log.create({
       data: {
@@ -68,7 +83,9 @@ async function processMailQueue() {
         result: null,
       },
     });
+    
     const result = await sendMailBySendCloud({ to, subject, html, plain, from, fromName });
+    
     // 日志：发送后
     await prisma.mail_log.create({
       data: {
@@ -79,25 +96,30 @@ async function processMailQueue() {
         result: JSON.stringify(result),
       },
     });
+    
     if (result.success) {
+      console.log(`[SUCCESS] 邮件发送成功! Email ID: ${result.emailId}`);
       await prisma.mail_queue.update({
         where: { id: mail.id },
         data: { status: 'sent', mail_id: result.emailId, send_time: new Date(), error_msg: null },
       });
     } else {
+      console.log(`[FAILED] 邮件发送失败! 错误原因: ${result.error}`);
       await prisma.mail_queue.update({
         where: { id: mail.id },
         data: { status: 'failed', error_msg: result.error, send_time: new Date() },
       });
     }
   }
+  
+  console.log(`\n[INFO] 邮件队列处理完成，共处理 ${mails.length} 封邮件`);
 }
 
 // 每5分钟执行一次
 cron.schedule('*/5 * * * *', async () => {
   console.log(`[mail_queue_worker] 定时任务启动: ${new Date().toISOString()}`);
   try {
-    await processMailQueue();
+    await processMailQueue(20); // 定时任务默认处理20封邮件
   } catch (e) {
     console.error('[mail_queue_worker] 任务异常', e);
   }
@@ -105,8 +127,21 @@ cron.schedule('*/5 * * * *', async () => {
 
 // 立即执行一次（本地调试）
 if (require.main === module) {
-  processMailQueue().then(() => {
-    console.log('[mail_queue_worker] 手动执行完成');
+  // 从命令行参数获取批量大小，默认为20
+  const batchSize = process.argv[2] ? parseInt(process.argv[2], 10) : 20;
+  
+  if (isNaN(batchSize) || batchSize <= 0) {
+    console.error('[ERROR] 批量大小必须是正整数');
+    process.exit(1);
+  }
+  
+  console.log(`[INFO] 手动执行模式启动，批量大小: ${batchSize}`);
+  
+  processMailQueue(batchSize).then(() => {
+    console.log('[INFO] 手动执行完成');
     process.exit(0);
+  }).catch((error) => {
+    console.error('[ERROR] 手动执行失败:', error);
+    process.exit(1);
   });
 } 

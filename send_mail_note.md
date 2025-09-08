@@ -39,6 +39,9 @@ npx ts-node prisma/seeds/gjh-135.ts "D:\Data\leads\liuzong\117届广交会国外
 发件人姓名也根据语言显示对应版本
 
 docker exec -it nextcrm-vv node jobs/mail_step_9.js 100
+- node jobs/mail_step_9.js 100
+- node dist/mail_step_9.js 100
+
 
 2025-08-29 开始，每天 200 封，直至完成一轮，
 
@@ -52,4 +55,5 @@ docker exec -it nextcrm-vv node jobs/mail_step_9.js 100
 # 发送邮件队列中的邮件
 # 早上 9:33 分发送（印尼时间比北京时间晚一小时）
 docker exec -it nextcrm-vv node jobs/mail_queue_worker.js 50
-
+- node jobs/mail_queue_worker.js 50
+- node dist/mail_queue_worker.js 50

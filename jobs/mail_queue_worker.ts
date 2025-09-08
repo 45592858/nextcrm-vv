@@ -43,7 +43,20 @@ async function sendMailBySendCloud({ to, subject, html, plain, from, fromName }:
     if (emailId) {
       return { success: true, emailId };
     }
-    return { success: false, error: 'No emailId returned' };
+    
+    // 当没有返回 emailId 时，打印详细的响应信息
+    console.log(`[DEBUG] No emailId returned - 详细响应信息:`);
+    console.log(`[DEBUG] HTTP 状态码: ${res.status}`);
+    console.log(`[DEBUG] 响应头:`, JSON.stringify(res.headers, null, 2));
+    console.log(`[DEBUG] 响应数据:`, JSON.stringify(res.data, null, 2));
+    console.log(`[DEBUG] 请求配置:`, JSON.stringify({
+      url: res.config.url,
+      method: res.config.method,
+      headers: res.config.headers,
+      data: res.config.data
+    }, null, 2));
+    
+    return { success: false, error: 'No emailId returned', response: res.data };
   } catch (e) {
     const err = e instanceof Error ? e : new Error(String(e));
     return { success: false, error: err.message };

@@ -71,22 +71,45 @@ async function processMailStep9(maxCustomers = 100) {
   // 3. 获取符合条件的客户邮箱
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
+  
+  // 先获取所有符合条件的客户
   const customers = await prisma.crm_Lead_Mail_Only.findMany({
     where: {
       state: { in: ['印尼', '印度尼西亚', 'Indonesia'] },
       email: { not: '' },
     },
   });
-  // 保险起见再过滤一次，兼容undefined/null/空字符串/业务规则
-  const allValidCustomers = customers.filter(c => {
+
+  // 获取每个客户邮箱对应的最新邮件队列状态
+  // 新的筛选逻辑：通过关联 mail_queue 表获取真实的邮件发送状态
+  const allValidCustomers = [];
+  for (const customer of customers) {
     // email 不为 null/空/全空格
-    if (!c.email || c.email.trim() === '') return false;
-    // last_email_at 为空/undefined 或 < startOfDay
-    if (c.last_email_at && c.last_email_at >= startOfDay) return false;
-    // last_email_status 为空/undefined 或 in ['sent', 'open', 'replied']
-    if (c.last_email_status && !['sent', 'open', 'replied'].includes(c.last_email_status)) return false;
-    return true;
-  });
+    if (!customer.email || customer.email.trim() === '') continue;
+
+    // 查询该邮箱在 mail_queue 中的最新记录（step=9）
+    const latestMailQueue = await prisma.mail_queue.findFirst({
+      where: {
+        to: customer.email,
+        step: 9, // 只查询 step_9 的邮件
+      },
+      orderBy: { created_at: 'desc' },
+    });
+
+    // 筛选逻辑：
+    // 1. 如果没有邮件记录，说明从未发送过，可以发送
+    // 2. 如果最新邮件状态为 sent/opened，说明上次发送成功，可以再次发送
+    // 3. 如果今天已经发送过邮件，则跳过（避免重复发送）
+    // 4. // TODO：除 sent / opened 外，还需要补充其它状态 如 replied/clicked，“replied/clicked”待验证
+    if (!latestMailQueue || ['sent', 'opened', 'replied', 'clicked'].includes(latestMailQueue.status)) {
+      // 如果今天已经发送过邮件，则跳过
+      if (latestMailQueue && latestMailQueue.created_at >= startOfDay) {
+        continue;
+      }
+      allValidCustomers.push(customer);
+    }
+    // 如果最新邮件状态为 pending/failed 等，则不发送（等待处理完成）
+  }
   
   // 限制处理数量，避免一次处理过多客户
   const validCustomers = allValidCustomers.slice(0, maxCustomers);
